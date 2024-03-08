@@ -1036,7 +1036,7 @@ namespace DataModel
 
         /// <summary>
         /// The user performing the audit. Is a GUID that links
-        /// to the CMSUsers.aspnetusers.ID field
+        /// to the cmsusers.aspnetusers.ID field
         /// </summary>
         [Required]
         [MaxLength(255)]

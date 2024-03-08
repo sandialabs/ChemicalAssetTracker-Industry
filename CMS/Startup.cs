@@ -146,7 +146,7 @@ namespace CMS
             catch (Exception ex)
             {
                 while (ex.InnerException != null) ex = ex.InnerException;
-                Console.WriteLine("Unable to open CMSUsers database: " + ex.Message);
+                Console.WriteLine("Unable to open cmsusers database: " + ex.Message);
             }
             using (var db = new CMSDB())
             {

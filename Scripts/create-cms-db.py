@@ -133,7 +133,7 @@ banner("Creating clean database", "", f"Database host is {hostname}")
 try:
     db = MySQL(hostname, user, pswd, 'mysql')
     db_exists = db.database_exists('cms')
-    userdb_exists = db.database_exists('CMSUsers')
+    userdb_exists = db.database_exists('cmsusers')
 
     if db_exists:
         print("Deleting cms database")

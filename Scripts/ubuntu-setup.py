@@ -145,7 +145,7 @@ def initialize_cat(askfirst):
     if askfirst == False or prompt("Initialize CAT databases? "):
         os.chdir('CAT/Scripts')
         run('pip3 install -r requirements.txt')
-        run('mysql -u pete -ppete CMSUsers < cmsusers-full.sql')
+        run('mysql -u pete -ppete cmsusers < cmsusers-full.sql')
         run('python create-cms-db.py -u pete -p pete -force -testdata -institution "Ministry of Education"')
         os.chdir('../..')
 
