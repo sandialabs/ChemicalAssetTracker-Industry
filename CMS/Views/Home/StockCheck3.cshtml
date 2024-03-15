@@ -23,10 +23,18 @@
                 <v-flex sm3 class="noborder">
                     <div style="display:flex; flex-direction:row; flex-wrap: wrap; align-items:center;">
                         <v-text-field id='barcode-input' label="Item Barcode" placeholder="Item Barcode" v-model="barcode" v-on:keyup.enter="on_barcode_acquired"></v-text-field>
-                        <img class="col" src="~/assets/Barcodes-icon.png" style="height: 4em; padding-left: 8px;" v-if="IsMobile" v-on:click="get_camera_barcode()" />
+                        <img src="~/assets/Barcodes-icon.png" style="height: 4em; padding-left: 8px;" v-if="IsMobile" v-on:click="get_camera_barcode()" />
+                    </div>
+                </v-flex>
+
+                <v-flex sm3>
+                    <div style="display:flex; flex-direction:row; flex-wrap: wrap; align-items:center;">
+                        <v-text-field id='quantity-input' label="Quantity Remaining" placeholder="Quantity Remaining" v-on:keyup.enter="on_barcode_acquired"></v-text-field>
+                        <img src="~/assets/Barcodes-icon.png" style="height: 4em; padding-left: 8px;" v-if="IsMobile" />
                     </div>
                 </v-flex>
             </v-layout>
+
             <v-layout row wrap>
                 <v-flex xs12>
                     <v-card flat style="height: 60vh; overflow-y: auto;">
@@ -44,8 +52,8 @@
                                         <th>Status</th>
                                         <th>Barcode</th>
                                         <th>Chemical</th>
-                                        <th>Last Recorded Location</th>
-                                        <th>Last Audited</th>
+                                        <!-- <th>Last Recorded Location</th> -->
+                                        <th>Last Updated</th>
                                         <!--
                                         <th>Confirm</th>
                                         -->
@@ -61,7 +69,7 @@
                                         </td>
                                         <td>{{item.Barcode}}</td>
                                         <td>{{item.ChemicalName}}</td>
-                                        <td>{{nice_location(item.Location)}}</td>
+                                        <!-- <td>{{nice_location(item.Location)}}</td> -->
                                         <td>{{nice_date(item.LastInventoryDate)}}</td>
                                         <!--
                                         <td><v-btn icon @@click="open_item_dialog(item)"><v-icon large>open_in_browser</v-icon></v-btn></td>

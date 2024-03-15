@@ -60,7 +60,7 @@
                             <v-btn flat icon @@click="column_select_visible = !column_select_visible"><v-icon>view_column</v-icon></v-btn>
                             <columnselect :visible="column_select_visible" :callback="on_columnselect_update"></columnselect>
                             <div style='margin-right: 4em;' v-if="ready && inventory.length > 0">
-                                <table class="table-header-rotated" style='font-size: x-small; color:black; '>
+                                <table id="inventory_table" class="table-header-rotated" style='font-size: x-small; color:black; '>
                                     <thead>
                                         <tr>
                                             <th style="width:80px;">Action</th>
@@ -74,7 +74,7 @@
                                             <th v-if="visible['group']">Storage Group</th>
                                             <th v-if="visible['size']">Container<br />Size</th>
                                             <th v-if="visible['remaining']">Remaining<br />Quantity</th>
-                                            <th v-if="visible['units']">Units</th>
+                                            <th v-if="visible['verified']">Date<br />Verified</th>
                                             <th v-if="visible['state']">State</th>
                                             <th v-if="visible['hazards']">Hazards</th>
                                             <th v-if="visible['hazards']">COC</th>
@@ -101,9 +101,9 @@
                                             <td v-if="visible['chemical']">{{item.ChemicalName}}</td>
                                             <td v-if="visible['casnumber']">{{item.CASNumber}}</td>
                                             <td v-if="visible['group']">{{get_embedded_name(item, 'Group')}}</td>
-                                            <td v-if="visible['size']">{{item.ContainerSize}}</td>
-                                            <td v-if="visible['remaining']">{{item.RemainingQuantity}}</td>
-                                            <td v-if="visible['units']">{{item.Units}}</td>
+                                            <td v-if="visible['size']">{{item.ContainerSize}} {{item.Units}}</td>
+                                            <td v-if="visible['remaining']">{{item.RemainingQuantity}} {{item.Units}} ({{ Math.round(item.RemainingQuantity / item.ContainerSize * 100) }}%)</td>
+                                            <td v-if="visible['verified']">{{get_date(item, 'LastInventoryDate')}}</td>
                                             <td v-if="visible['state']">{{item.State}}</td>
                                             <td v-if="visible['hazards']" style="padding: 2px;">
                                                 <div style="display:inline-flex;  flex-direction: row; flex-wrap:wrap;  padding: 0; justify-content:space-around;">
@@ -286,6 +286,7 @@
                     group: true,
                     size: true,
                     remaining: true,
+                    verified: true,
                     state: true,
                     notes: true,
                     units: true,
@@ -860,6 +861,10 @@
 @section Styles {
 
     <style>
+
+        #inventory_table td:nth-child(2), th:nth-child(2), td:nth-child(5), th:nth-child(5), td:nth-child(6), th:nth-child(6), td:nth-child(9), th:nth-child(9) {
+            display: none;
+        }
 
         .loading {
             width: 100vw;

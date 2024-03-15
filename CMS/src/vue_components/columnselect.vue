@@ -79,6 +79,7 @@ const mymodule = {
                     { name: "group", label: "Storage Group", value: true, enabled: true },
                     { name: "size", label: "Size", value: true, enabled: true },
                     { name: "remaining", label: "Remaining Qty", value: true, enabled: true },
+                    { name: "verified", label: "Date Verified", value: true, enabled: true },
                     { name: "state", label: "State", value: true, enabled: true },
                     { name: "sds", label: "SDS", value: true, enabled: true },
                     { name: "hazards", label: "Hazards", value: true, enabled: true },

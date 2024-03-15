@@ -6,7 +6,7 @@
     <UserSecretsId>aspnet-CMS-82DD017C-67EC-4960-B340-780AD02A1DFB</UserSecretsId>
     <SourceRevisionId>build$([System.DateTime]::Now.ToString("yyyyMMddHHmmss"))</SourceRevisionId>
     <AssemblyName>CAT</AssemblyName>
-    <TypeScriptToolsVersion>3.1</TypeScriptToolsVersion>
+    <TypeScriptToolsVersion>4.3</TypeScriptToolsVersion>
     <PublishWithAspNetCoreTargetManifest>false</PublishWithAspNetCoreTargetManifest>
   </PropertyGroup>
 
