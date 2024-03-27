@@ -11,7 +11,7 @@
 }
 
 
-<div class="banner" style="margin-bottom: 1em;">Inventory</div>
+<div class="banner" style="margin-bottom: 1em;">Storage Units</div>
 <v-app data-app>
     <div id="app">
         <v-content>
@@ -66,6 +66,7 @@
                                             <th style="width:80px;">Action</th>
                                             <th v-if="visible['barcode']">Barcode</th>
                                             <th v-if="visible['location']">Location</th>
+                                            <th v-if="visible['containername']">Container Name</th>
                                             <th v-if="visible['owner']">Owner</th>
                                             <th v-if="visible['datein']">Date In</th>
                                             <th v-if="visible['expiry']">Expiration<br />Date</th>
@@ -74,36 +75,39 @@
                                             <th v-if="visible['group']">Storage Group</th>
                                             <th v-if="visible['size']">Container<br />Size</th>
                                             <th v-if="visible['remaining']">Remaining<br />Quantity</th>
-                                            <th v-if="visible['verified']">Date<br />Verified</th>
+                                            <th v-if="visible['verified']">Stock<br />Checked</th>
                                             <th v-if="visible['state']">State</th>
                                             <th v-if="visible['hazards']">Hazards</th>
                                             <th v-if="visible['hazards']">COC</th>
                                             <th v-if="visible['sds']" style="min-width:60px;">SDS</th>
                                             <th v-if="visible['notes']">Notes</th>
+                                            <th v-if="visible['refillable']">Refillable</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr v-bind:class="item_class(item)" v-for='item in inventory' v-on:contextmenu="on_right_click(item, $event)" v-on:dblclick="on_row_dblclick(item, $event)" v-bind:class="{ active: item == selected_item } ">
                                             <td>
                                                 <v-btn icon flat class="blue--text inline-button" title="Hazard Info" v-on:click="on_show_hazards(item)"><v-icon small>info</v-icon></v-btn>
+                                                <v-btn icon flat class="purple--text inline-button" title="Refill" v-on:click="on_add_refill(item)"><v-icon small>replay</v-icon></v-btn>
                                                 <v-btn icon flat class="green-text inline-button" title="Edit" v-on:click="on_edit_item(item)"><v-icon small>edit</v-icon></v-btn>
                                                 <v-btn icon flat class="red--text inline-button" title="Delete" v-on:click="on_delete_item(item)"><v-icon small>delete</v-icon></v-btn>
                                                 <!--
-                                            <i class="material-icons" style="font-size: 16px; color: green;" v-on:click="on_edit_item(item)">edit</i>
-                                            <i class="material-icons" style="font-size: 16px; color: red;" v-on:click="on_delete_item(item)">delete</i>
-                                            -->
+        <i class="material-icons" style="font-size: 16px; color: green;" v-on:click="on_edit_item(item)">edit</i>
+        <i class="material-icons" style="font-size: 16px; color: red;" v-on:click="on_delete_item(item)">delete</i>
+        -->
                                             </td>
                                             <td v-if="visible['barcode']">{{item.Barcode}}</td>
                                             <td v-if="visible['location']">{{nice_item_location(item)}}</td>
+                                            <td v-if="visible['containername']">{{item.ContainerName}}</td>
                                             <td v-if="visible['owner']">{{get_embedded_name(item, 'Owner')}}</td>
                                             <td v-if="visible['datein']">{{get_date(item, 'DateIn')}}</td>
                                             <td v-if="visible['expiry']">{{get_date(item, 'ExpirationDate')}}</td>
                                             <td v-if="visible['chemical']">{{item.ChemicalName}}</td>
                                             <td v-if="visible['casnumber']">{{item.CASNumber}}</td>
                                             <td v-if="visible['group']">{{get_embedded_name(item, 'Group')}}</td>
-                                            <td v-if="visible['size']">{{item.ContainerSize}} {{item.Units}}</td>
-                                            <td v-if="visible['remaining']">{{item.RemainingQuantity}} {{item.Units}} ({{ Math.round(item.RemainingQuantity / item.ContainerSize * 100) }}%)</td>
-                                            <td v-if="visible['verified']">{{get_date(item, 'LastInventoryDate')}}</td>
+                                            <td v-if="visible['size']">{{item.ContainerSize}} {{item.ContainerUnit?.UnitAbbreviation}}</td>
+                                            <td v-if="visible['remaining']">{{item.RemainingQuantity}} {{item.ContainerUnit?.UnitAbbreviation}} ({{ Math.round(item.RemainingQuantity / item.ContainerSize * 100) }}%)</td>
+                                            <td v-if="visible['verified']">{{get_date(item, 'StockCheckTime')}}</td>
                                             <td v-if="visible['state']">{{item.State}}</td>
                                             <td v-if="visible['hazards']" style="padding: 2px;">
                                                 <div style="display:inline-flex;  flex-direction: row; flex-wrap:wrap;  padding: 0; justify-content:space-around;">
@@ -119,6 +123,7 @@
                                                 <a v-for="(href, ix) in get_sds_hrefs(item)" :key='ix' target="SDS" v-bind:href="href"><v-icon>find_in_page</v-icon></a>
                                             </td>
                                             <td v-if="visible['notes']" style="min-width: 180px;">{{item.Notes}}</td>
+                                            <td v-if="visible['refillable']" style="min-width: 180px;">{{item.Refillable}}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -155,10 +160,15 @@
             <hazardinfo ref="hazardinfo" :item="hazard_item"></hazardinfo>
         </v-dialog>
 
+        <v-dialog v-model="is_refillinfo_visible" width="1000">
+            <!--<hazardinfo ref="hazardinfo" :item="hazard_item"></hazardinfo>-->
+        </v-dialog>
 
-        <itemdialog ref='itemdialog' :owners="owners" :groups="groups" :readonly="true" :debug="false"></itemdialog>
+
+        <itemdialog ref='itemdialog' :units="units" :owners="owners" :groups="groups" :readonly="true" :debug="false"></itemdialog>
         <confirmdialog ref="confirmdialog" width="400px"></confirmdialog>
         <infodialog ref="infodialog" width="250px"></infodialog>
+        <containerrefill ref="containerrefill" width="400px"></containerrefill>
         <pictogramdialog ref="pictogramdialog" width="300px"></pictogramdialog>
         <cocdialog ref="cocdialog" width="300px"></cocdialog>
     </div>
@@ -180,6 +190,7 @@
     <script src="~/js/ghs.js" asp-append-version="true"></script>
     <script src="~/dist/pictogramdialog.js" asp-append-version="true"></script>
     <script src="~/dist/cocdialog.js" asp-append-version="true"></script>
+    <script src="~/dist/containerrefill.js" asp-append-version="true"></script>
 
     <script>
 
@@ -252,6 +263,8 @@
                 "hazardinfo": VueComponents.HazardInfo,
                 "pictogramdialog": VueComponents.PictogramDialog,
                 "cocdialog": VueComponents.COCDialog,
+                "containerrefill": VueComponents.ContainerRefill,
+                //'textinputdialog': httpVueLoader('/vue-components/textinputdialog.vue'),
             },
             data: {
                 column_select_visible: false,
@@ -280,6 +293,7 @@
                     casnumber: true,
                     chemical: true,
                     location: true,
+                    containername: true,
                     datein: true,
                     expiry: true,
                     owner: true,
@@ -292,9 +306,12 @@
                     units: true,
                     sds: true,
                     hazards: true,
+                    refillable: true,
                 },
                 hazard_item: {},
+                refill_item: {},
                 is_hazardinfo_visible: false,
+                is_refillinfo_visible: false,
                 inventory_settings: {
                     root_location: undefined
                 },
@@ -307,15 +324,15 @@
                     ItemFlags: {}
                 },
                 units: [
-                    { value: 'cm3', text: 'Cubic centimeters (cm^3)' },
-                    { value: 'm3', text: 'Cubic meters (m^3)' },
-                    { value: 'g', text: 'Gram (g)' },
-                    { value: 'kg', text: 'Kilogram (kg)' },
-                    { value: 'L', text: 'Liter (L)' },
-                    { value: 'mg', text: 'Milligram (mg)' },
-                    { value: 'mL', text: 'Milliliter (mL)' },
-                    { value: 'ft3', text: 'Cubic feet (ft^3)' },
-                    { value: ' ', text: '(blank)' },
+                    // { value: 'cm3', text: 'Cubic centimeters (cm^3)' },
+                    // { value: 'm3', text: 'Cubic meters (m^3)' },
+                    // { value: 'g', text: 'Gram (g)' },
+                    // { value: 'kg', text: 'Kilogram (kg)' },
+                    // { value: 'L', text: 'Liter (L)' },
+                    // { value: 'mg', text: 'Milligram (mg)' },
+                    // { value: 'mL', text: 'Milliliter (mL)' },
+                    // { value: 'ft3', text: 'Cubic feet (ft^3)' },
+                    // { value: ' ', text: '(blank)' },
                 ],
                 states: [
                     { value: 'solid', text: 'solid' },
@@ -334,14 +351,28 @@
                 this.refresh();
             },
             methods: {
+                getUnits: function () {
+                    var self = this;
+                    axios({
+                        method: 'GET',
+                        url: utils.api_url('getContainerUnits')
+                    }).then(function (result) {
+                        let unit_array = result.data.Data.ContainerUnits;
+                        self.units = unit_array.map(u => {
+                            return {
+                                ContainerUnitID: u.ContainerUnitID,
+                                Name: u.Name
+                            }
+                        });
+                    })
+                        .catch(function (error) { console.log(error); });
+                },
                 refresh: function () {
-                    console.log("In refresh()");
                     var self = this;
 
                     this.working = true;
                     is_loading(true);
 
-                    console.log("Calling getcoc")
                     api.axios_get({
                         url: utils.api_url("getcoc"),
                         caller:  'refresh',
@@ -417,6 +448,7 @@
 
                 on_begin_inventory_load: function () {
                     console.log("ON BEGIN LOAD");
+                    this.getUnits();
                 },
 
 
@@ -635,6 +667,66 @@
                     this.is_hazardinfo_visible = true;
                 },
 
+                on_add_refill: function (inventory_item) {
+                    console.log("on_add_refill");
+                    this.error_message = "";
+                    this.selected_item = undefined;
+                    let self = this;
+                    let new_item = {
+                        RefillID: 0,
+                        Manufacturer: "",
+                        LotNumber: "",
+                        DateManufactured: null,
+                        DateReceived: moment().format('YYYY-MM-DD'),
+                        DateExpires: null,
+                        UnitsReceived: 0,
+                        ContainerUnitID: 0,
+                        CASNumber: ""
+                    };
+                    let config = {
+                        header: "Record Refill",
+                        item: new_item,
+                        readonly: false
+                    };
+
+                    this.is_refillinfo_visible = true;
+                    console.log("get units on open", self.units);
+
+                    this.$refs['containerrefill'].open(new_item, "Record Refill", self.units, function (op, refill_item) {
+                        if (op == 'save') {
+                            console.log("Create new [location type] named " + refill_item?.RefillID + " : Second: " + refill_item?.DateReceived);
+                            self.record_refill(refill_item, inventory_item);
+                        }
+                    });
+                },
+
+                record_refill: function (refill_item, inventory_item) {
+                    let self = this;
+
+                    console.log("on_create_location", refill_item);
+                        api.axios_post({
+                            url: '/api/recordrefill',
+                            caller: 'on_record_refill',
+                            verbose: true,
+                            id: '',
+                            data: refill_item,
+                            onsuccess: function (ajax_result) {
+                                //self.location_info_visible = false;
+                            self.notify("Record Refill", ajax_result.Message);
+                            this.is_refillinfo_visible = false;
+                                if (inventory_item) {
+                                    inventory_item.RemainingQuantity += refill_item.UnitsReceived;
+                                    console.table(inventory_item);
+                                    self.save_edits(inventory_item);
+                                }
+                            },
+                            onfailure: function (ajax_result) {
+                            self.notify("Record Refill", ajax_result.Message);
+                            }
+                        });
+                },
+
+
                 on_row_dblclick: function (item, ev) {
                     this.error_message = "";
                     //console.log("on_row_dblclick", item, ev);
@@ -650,6 +742,7 @@
                         Barcode: "",
                         CASNumber: "",
                         ChemicalName: "",
+                        ContainerName: "",
                         ContainerSize: null,
                         DateIn: null,
                         ExpirationDate: null,
@@ -673,7 +766,10 @@
                         StockCheckLocation: "",
                         Units: "",
                         date_in: moment().format('YYYY-MM-DD'),
-                        expiry: null
+                        expiry: null,
+                        ContainerUnit: null,
+                        ContainerUnitID: null,
+                        Refillable: false,
                     };
                     let config = {
                         header: "New Inventory Item",

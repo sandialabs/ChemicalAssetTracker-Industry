@@ -13,6 +13,7 @@ export interface IInventoryItem {
     CASNumber: string;
     ChemicalName: string;
     LocationID: number;
+    ContainerName: string;
     SiteID: number;
     GroupID?: number;
     OwnerID?: number;
@@ -34,6 +35,8 @@ export interface IInventoryItem {
     //----------------------------------------------------------------
 
     MaterialType: EMaterialType;
+    ContainerUnitID: number;
+    Refillable: boolean;
     Custom1: string;
     Custom2: string;
     Custom3: string;
@@ -45,6 +48,7 @@ export class InventoryItem {
     CASNumber: string;
     ChemicalName: string;
     LocationID: number;
+    ContainerName: string;
     SiteID: number;
     GroupID?: number;
     OwnerID?: number;
@@ -66,6 +70,8 @@ export class InventoryItem {
     //----------------------------------------------------------------
 
     MaterialType: EMaterialType;
+    ContainerUnitID: number;
+    Refillable: boolean;
     Custom1: string;
     Custom2: string;
     Custom3: string;
@@ -76,6 +82,7 @@ export class InventoryItem {
         this.CASNumber = i.CASNumber;
         this.ChemicalName = i.ChemicalName;
         this.LocationID = i.LocationID;
+        this.ContainerName = i.ContainerName;
         this.SiteID = i.SiteID;
         this.GroupID = i.GroupID;
         this.OwnerID = i.OwnerID;
@@ -96,6 +103,8 @@ export class InventoryItem {
         //----------------------------------------------------------------
 
         this.MaterialType = i.MaterialType;
+        this.ContainerUnitID = i.ContainerUnitID;
+        this.Refillable = i.Refillable;
         this.Custom1 = i.Custom1;
         this.Custom2 = i.Custom2;
         this.Custom3 = i.Custom3;

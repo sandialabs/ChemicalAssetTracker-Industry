@@ -73,6 +73,7 @@ const mymodule = {
                     { name: "casnumber", label: "CAS #", value: true, enabled: true },
                     { name: "chemical", label: "Chemical Name", value: true, enabled: true },
                     { name: "location", label: "Location", value: true, enabled: true },
+                    { name: "containername", label: "Container Name", value: true, enabled: true },
                     { name: "datein", label: "Date In", value: true, enabled: true },
                     { name: "expiry", label: "Expiration", value: true, enabled: true },
                     { name: "owner", label: "Owner", value: true, enabled: true },
@@ -85,6 +86,7 @@ const mymodule = {
                     { name: "hazards", label: "Hazards", value: true, enabled: true },
                     { name: "units", label: "Units", value: true, enabled: true },
                     { name: "notes", label: "Notes", value: true, enabled: true },
+                    { name: "refillable", label: "Refillable", value: true, enabled: true },
                 ];
             }
         }

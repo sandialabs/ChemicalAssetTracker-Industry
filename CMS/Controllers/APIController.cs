@@ -1073,6 +1073,42 @@ namespace CMS.Controllers
             return result;
         }
 
+        [HttpPost("recordrefill")]
+        public AjaxResult RecordRefill([FromBody] Refill refill_item)
+        {
+            AjaxResult result = new AjaxResult("APIController.UpdateLocation");
+            try
+            {
+                string msg = "SUCCESS";
+                using (CMSDB db = new CMSDB())
+                {
+                    if (refill_item.RefillID == 0)
+                    {
+                        db.RecordRefill(refill_item, true);
+                        msg = $"Refill successfully added to the database.";
+                        //db.LogInfo(User.Identity.Name, "update", $"Refill \"{db.GetLocationName(location.LocationID)}\" ({location.LocationID}) added", false);
+                        db.LogInfo(User.Identity.Name, "update", $"Refill \"{refill_item.CASNumber}\" ({refill_item.RefillID}) added", false);
+                    }
+                    else
+                    {
+                        // Use this for updating existing Refill entries.
+                        //db.UpdateLocationName(location.LocationID, location.Name);
+                        //msg = "Location name successfully changed";
+                        //db.LogInfo(User.Identity.Name, "update", $"Location #{location.LocationID} name changed to \"{location.Name}\"", false);
+                    }
+                    db.SaveChanges();
+                    List<StorageLocation> locations = db.GetStorageLocations(false);
+                    result.Set("locations", locations);
+                    result.Succeed(msg);
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Fail(ex);
+            }
+            return result;
+        }
+
         [HttpDelete("deletelocation/{location_id:int}")]
         public AjaxResult DeleteLocation(int location_id)
         {
@@ -1102,6 +1138,32 @@ namespace CMS.Controllers
         //
         //#################################################################
 
+        [HttpGet("getContainerUnits")]
+        public AjaxResult GetContainerUnits()
+        {
+            AjaxResult result = new AjaxResult("APIController.GetContainerUnits");
+            try
+            {
+                List<ContainerUnit> containers = new List<ContainerUnit>();
+                using (CMSDB db = new CMSDB())
+                {
+                    //foreach (var item in db.InventoryItems)
+                    //{
+                    //    db.InitializeLocationNames(item.Location);
+                    //    InventoryData data = new InventoryData(item);
+                    //    inventory.Add(data);
+                    //}
+                    containers = db.ContainerUnits.ToList();
+                }
+                result.Succeed("SUCCESS", "ContainerUnits", containers);
+            }
+            catch (Exception ex)
+            {
+                result.Fail(ex);
+            }
+            return result;
+        }
+
         [HttpGet("getinventory")]
         public AjaxResult GetInventory()
         {
@@ -1111,7 +1173,7 @@ namespace CMS.Controllers
                 List<InventoryData> inventory = new List<InventoryData>();
                 using (CMSDB db = new CMSDB())
                 {
-                    foreach (var item in db.InventoryItems.Include(x => x.Location).Include(x => x.Group).Include(x => x.Owner))
+                    foreach (var item in db.InventoryItems.Include(x => x.Location).Include(x => x.Group).Include(x => x.Owner).Include(x => x.ContainerUnit))
                     {
                         db.InitializeLocationNames(item.Location);
                         InventoryData data = new InventoryData(item);
@@ -1568,6 +1630,7 @@ namespace CMS.Controllers
         public List<StorageLocation> Locations { get; set; }
         public List<StorageLocation> Sites { get; set; }
         public List<StorageGroup> Groups { get; set; }
+        public List<ContainerUnit> ContainerUnits { get; set; }
         public List<Setting> GlobalSettings { get; set; }
         public StorageLocation CurrentSite { get; set; }
         public string Country { get; set; }
@@ -1662,6 +1725,7 @@ namespace CMS.Controllers
         public string FullLocation { get; set; }
         public string Owner { get; set; }
         public string Group { get; set; }
+        public string ContainerUnit { get; set; }
 
         public InventoryData() { }
         public InventoryData(InventoryItem item)
@@ -1673,6 +1737,7 @@ namespace CMS.Controllers
             FullLocation = item.Location.FullLocation;
             Owner = item.Owner == null ? "" : item.Owner.Name;
             Group = item.Group == null ? "" : item.Group.Name;
+            ContainerUnit = item.ContainerUnit == null ? "" : item.ContainerUnit.Name;
         }
 
     }

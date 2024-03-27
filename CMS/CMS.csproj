@@ -10,6 +10,10 @@
     <PublishWithAspNetCoreTargetManifest>false</PublishWithAspNetCoreTargetManifest>
   </PropertyGroup>
 
+	<!-- Include this to autop-run the npm bundle script before building the project. -->
+	<Target Name="RunBundle" BeforeTargets="Build">
+		<Exec Command="npm run bundle" />
+	</Target>
 
   <ItemGroup>
     <PackageReference Include="DocumentFormat.OpenXml" Version="2.11.3" />

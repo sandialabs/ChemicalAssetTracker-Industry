@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+//using static ClosedXML.Excel.XLPredefinedFormat;
 
 // mysql > create table HazardCodes(HazardCodeID int primary key, GHSCode varchar(16) not null, CASNumber varchar(32) not null);
 // Query OK, 0 rows affected (0.06 sec)
@@ -351,6 +352,49 @@ namespace DataModel
         public string Pictograms { get; set; }
     }
 
+    public class Refill
+    {
+        [Key]
+        public int RefillID { get; set; }
+        [MaxLength(45)]
+        public string Manufacturer { get; set; }
+        [MaxLength(45)]
+        public string LotNumber { get; set; }
+        public DateTime? DateManufactured { get; set; }
+        public DateTime? DateReceived { get; set; }
+        public DateTime? DateExpires { get; set; }
+        [MaxLength(64)]
+        public string UnitsReceived { get; set; }
+        [Required]
+        public int ContainerUnitID { get; set; }
+        [ForeignKey("ContainerUnitID")]
+        public ContainerUnit ContainerUnit { get; set; }
+        [MaxLength(32)]
+        public string CASNumber { get; set; }
+}
+
+    public class ContainerUnit
+    {
+        [Key]
+        public int ContainerUnitID { get; set; }
+        [Required, MaxLength(64)]
+        public string Name { get; set; }
+        [Required, MaxLength(54)]
+        public string UnitAbbreviation { get; set; }
+
+        public ContainerUnit()
+        {
+
+        }
+
+        public ContainerUnit(int containerunitid, string name, string unitabbreviation)
+        {
+            ContainerUnitID = containerunitid;
+            Name = name;
+            UnitAbbreviation = unitabbreviation;
+        }
+    }
+
     public class InventoryItem
     {
         [Key]
@@ -426,6 +470,15 @@ namespace DataModel
         [Required]
         [DefaultValue(false)]
         public bool DisposeFlag { get; set; }
+
+        public int? ContainerUnitID { get; set; }
+        [ForeignKey("ContainerUnitID")]
+        public ContainerUnit ContainerUnit { get; set; }
+
+        public bool? Refillable { get; set; }
+
+        [MaxLength(64)]
+        public string ContainerName { get; set; }
 
         [MaxLength(256)]
         public string Custom1 { get; set; }

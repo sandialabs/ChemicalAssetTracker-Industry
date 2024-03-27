@@ -440,6 +440,7 @@ export function new_inventory_item_template() {
         Barcode: "",
         CASNumber: "",
         ChemicalName: "",
+        ContainerName: "",
         ContainerSize: null,
         DateIn: new Date(),
         ExpirationDate: null,
@@ -463,6 +464,9 @@ export function new_inventory_item_template() {
         Units: "",
         date_in: moment().format("YYYY-MM-DD"),
         expiration_date: null,
+        ContainerUnit: null,
+        ContainerUnitID: null,
+        Refillable: false,
     };
     return result;
 }
