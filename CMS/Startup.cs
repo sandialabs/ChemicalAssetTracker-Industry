@@ -95,8 +95,12 @@ namespace CMS
                     options.HttpsPort = Program.ListenPort;
                 });
             }
-            services.AddMvc()
-                .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
+            //services
+            //    .AddMvc()
+            //    .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
+
+            services.AddControllersWithViews().AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
+
 
             services.AddAntiforgery();
         }
@@ -106,7 +110,7 @@ namespace CMS
         {
             if (env.IsDevelopment())
             {
-                app.UseBrowserLink();
+                //app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
             }
@@ -129,14 +133,20 @@ namespace CMS
             }
             app.UseStaticFiles(new StaticFileOptions() { ContentTypeProvider = myProvider });
             app.UseStaticFiles();
+            app.UseRouting();
 
             app.UseAuthentication();
+            app.UseAuthorization(); // This needs to be between app.UseRouting(); and app.UseEndpoints();
 
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+            //app.UseMvc(routes =>
+            //{
+            //    routes.MapRoute(
+            //        name: "default",
+            //        template: "{controller=Home}/{action=Index}/{id?}");
+            //});
+
+            app.UseEndpoints(endpoints => {
+                endpoints.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
             });
 
             try

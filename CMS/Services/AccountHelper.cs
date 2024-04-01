@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DataModel;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CMS.Services
 {
@@ -158,11 +159,11 @@ namespace CMS.Services
         {
             List<UserInfo> result = new List<UserInfo>();
 
-            foreach (ApplicationUser user in m_user_manager.Users.Where(x => location_ids.Contains(x.HomeLocationID)).OrderBy(x => x.UserName))
+            foreach (ApplicationUser user in m_user_manager.Users.Where(x => location_ids.Contains(x.HomeLocationID)).OrderBy(x => x.UserName).ToList())
             {
                 UserInfo info = new UserInfo(user);
                 var roles = await m_user_manager.GetRolesAsync(user);
-                foreach (string role in roles) info.Roles.Add(role);
+                foreach (string role in roles.ToList()) info.Roles.Add(role);
                 result.Add(info);
             }
             return result;
@@ -261,7 +262,7 @@ namespace CMS.Services
 
         public List<UserInfo> GetUsers(int[] location_ids)
         {
-            return GetUsersAsync(location_ids).Result;
+            return GetUsersAsync(location_ids).Result.ToList();
         }
 
         public (bool, string) DeleteUser(string username)
@@ -340,6 +341,7 @@ namespace CMS.Services
         public string Workplace { get; set; }
         public string PhoneNumber { get; set; }
         public int HomeLocationID { get; set; }
+        [ForeignKey("HomeLocationID")]
         public string HomeLocation { get; set; }
         public bool IsChanged { get; set; }
         public int PictureAttachmentID { get; set; }

@@ -518,6 +518,7 @@ namespace CMS.Controllers
                     });
                     result.Set("ThisUser", this_user);
                     result.Succeed($"{users.Count} users successfully read", "Users", users);
+                    //result.Succeed($"[temp] users successfully read", "Users", new List<UserInfo>());
                 }
             }
             catch (Exception ex)

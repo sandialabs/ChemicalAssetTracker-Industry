@@ -317,6 +317,7 @@ namespace DataModel
                     {
                         if (callback(reader) == false) break;
                     }
+                    reader.Close();
                 }
             }
         }
