@@ -29,7 +29,14 @@
 
                 <v-flex sm3>
                     <div style="display:flex; flex-direction:row; flex-wrap: wrap; align-items:center;">
-                        <v-text-field id='quantity-input' label="Quantity Remaining" placeholder="Quantity Remaining" v-on:keyup.enter="on_barcode_acquired"></v-text-field>
+                        <v-text-field id='chemical-input' label="Chemical Name" placeholder="Chemical Name" v-model="chemical_name" v-on:keyup.enter="on_chemical_acquired"></v-text-field>
+                        <img src="~/assets/Barcodes-icon.png" style="height: 4em; padding-left: 8px;" v-if="IsMobile" />
+                    </div>
+                </v-flex>
+
+                <v-flex sm3>
+                    <div style="display:flex; flex-direction:row; flex-wrap: wrap; align-items:center;">
+                        <v-text-field id='container-input' label="Container Name" placeholder="Container Name" v-model="container_name" v-on:keyup.enter="on_chemical_acquired"></v-text-field>
                         <img src="~/assets/Barcodes-icon.png" style="height: 4em; padding-left: 8px;" v-if="IsMobile" />
                     </div>
                 </v-flex>
@@ -57,6 +64,7 @@
                                         <!--
                                         <th>Confirm</th>
                                         -->
+                                        <th>Container Name</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -74,6 +82,7 @@
                                         <!--
                                         <td><v-btn icon @@click="open_item_dialog(item)"><v-icon large>open_in_browser</v-icon></v-btn></td>
                                         -->
+                                        <td>{{item.ContainerName}}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -231,7 +240,9 @@
 
                 // Where the user types the barcode in, or where he barcode reading code
                 // puts the barcode text
-                barcode: ""
+                barcode: "",
+                chemical_name: "",
+                container_name: ""
             },
             components: {
                 'locationpicker': VueComponents.LocationPicker,
@@ -478,6 +489,40 @@
                     }
 
                     self.barcode = "";
+                },
+
+                on_chemical_acquired: function () {
+                    let self = this;
+                    let barcode = self.barcode;
+                    let chemical_name = self.chemical_name;
+                    let container_name = self.container_name;
+                    let root_id = self.audit_location.LocationID;
+                    self.inventory = [];
+
+                    console.log("Audit Location", this.audit_location.LocationID);
+
+                    api.axios_get({
+                        url: utils.api_url("getinventoryitems") + "?root_id=" + root_id + "&barcode=" + barcode + "&chemical_name=" + chemical_name + "&container_name=" + container_name,
+                        caller: "on_enter_query",
+                        verbose: true,
+                        onsuccess: function (result) {
+                            console.log("fetch_filter_items", result);
+                            console.table(result.Data.Inventory);
+                            for (let i = 0; i < result.Data.Inventory.length; ++i) {
+                                let item = result.Data.Inventory[i];
+                                item.status = "unconfirmed"
+                                self.inventory.push(item);
+                            }
+                            // if (callback) {
+                            //     callback();
+                            //}
+                            self.focus_barcode();
+                            self.$forceUpdate();
+                        },
+                        onfailure: function (result) {
+                            self.notify("Audit", result.Message);
+                        }
+                    })
                 },
 
                 on_select_location: function () {

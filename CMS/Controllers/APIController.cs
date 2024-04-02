@@ -327,6 +327,60 @@ namespace CMS.Controllers
         }
 
 
+        [HttpGet("getinventoryitems/")]
+        public IActionResult GetInventoryItems(int root_id, string barcode = null, string chemical_name = null, string container_name = null)
+        {
+            AjaxResult result = new AjaxResult("APIController.GetInventoryItems");
+            string decoded_barcode = null;
+
+            try
+            {
+                using (CMSDB db = new CMSDB())
+                {
+                    (UserInfo user_info, StorageLocation home_location) = GetVisibleLocation(root_id, db);
+                    if (!string.IsNullOrEmpty(barcode))
+                    {
+                        // semi-kludge: if the barcode includes '#', it has been replaced with '_HASH_'
+                        decoded_barcode = barcode.Replace("_HASH_", "#");
+                    }
+                    Console.WriteLine("*** 1st Root ID: " + root_id + "; Chemical Name: " + chemical_name + "; Container: " + container_name);
+                    List<InventoryItem> inventoryItems = db.GetItemsByQueryAsync(root_id, barcode, chemical_name, container_name).ToList();
+                    result["Inventory"] = inventoryItems;
+                    result.Set("HomeLocation", home_location)
+                          .Set("Inventory", inventoryItems)
+                          .Succeed();
+
+                    //inventoryItems.ForEach( item =>
+                    //{
+                    //    if (item == null) result.Fail($"Barcode \"{barcode}\" was not found or is not accessible.");
+                    //    else
+                    //    {
+                    //        (_, StorageLocation home_location) = GetUserHomeLocation(db);
+                    //        StorageLocation loc = db.Locations.Find(item.LocationID);
+                    //        if (db.Locations.Subsumes(home_location, loc))
+                    //        {
+                    //            item.InitializeItemFlags(db);
+                    //            string[] sds_files = GetSDSFiles(item.CASNumber);
+                    //            result.Set("SDSFiles", sds_files)
+                    //                .Set("Item", item)
+                    //                .Set("Location", loc)
+                    //                .Succeed($"Found inventory item {barcode}");
+                    //        }
+                    //        else result.Fail($"Barcode \"{barcode}\" was not found or is not accessible.");
+                    //    }
+                    //});
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Fail(ex);
+            }
+
+            return Ok(result);
+        }
+
+
+
         ///----------------------------------------------------------------
         ///
         /// Function:       UpdateInventoryItem

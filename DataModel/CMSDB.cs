@@ -409,6 +409,36 @@ namespace DataModel
             return result;
         }
 
+        public IEnumerable<InventoryItem> GetItemsByQueryAsync(int root_id = 0, string barcode = null, string chemical_name = null, string container_name = null)
+        {
+            var inventoryItems = InventoryItems.AsQueryable();
+            Console.WriteLine("*** 2nd Root ID: " + root_id + "; Chemical Name: " + chemical_name + "; Container: " + container_name);
+
+            if (root_id > 0)
+            {
+                inventoryItems = inventoryItems.Where(item => item.LocationID == root_id);
+            }
+
+            if (!string.IsNullOrEmpty(barcode))
+            {
+                inventoryItems = inventoryItems.Where(item => item.Barcode.Contains(barcode));
+            }
+
+            if (!string.IsNullOrEmpty(chemical_name))
+            {
+                inventoryItems = inventoryItems.Where(item => item.ChemicalName.Contains(chemical_name));
+            }
+
+            if (!string.IsNullOrEmpty(container_name))
+            {
+                inventoryItems = inventoryItems.Where(item => item.ContainerName.Contains(container_name));
+            }
+
+            Console.WriteLine("*** Items Found: " + inventoryItems.ToList());
+
+            return inventoryItems.ToList();
+        }
+
         public InventoryItem GetItem(int item_id)
         {
             InventoryItem result = InventoryItems.Include(x => x.Group).Include(x => x.Owner).Include(x => x.ContainerUnit).FirstOrDefault(x => x.InventoryID == item_id);
