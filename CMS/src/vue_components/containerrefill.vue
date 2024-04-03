@@ -2,25 +2,37 @@
 
     <div class="text-xs-center">
         <v-dialog v-model="textinput_dialog_active" :width="width">
-            <v-card class="noborder"  @keyup.enter="on_accept()">
-                <v-card-title class="headline grey lighten-2" primary-title>
-                    {{header}}
-                </v-card-title>
-                <v-card-text>
-                    <v-text-field label="Manufacturer" single-line v-model="refillRecord.Manufacturer"></v-text-field>
-                    <v-text-field label="Lot Number" single-line v-model="refillRecord.LotNumber"></v-text-field>
-                    <v-text-field type="date" label="DateManufactured" single-line v-model="refillRecord.DateManufactured"></v-text-field>
-                    <v-text-field type="date" label="DateReceived" single-line v-model="refillRecord.DateReceived"></v-text-field>
-                    <v-text-field type="date" label="DateExpires" single-line v-model="refillRecord.DateExpires"></v-text-field>
-                    <v-text-field label="UnitsReceived" typeof="number" single-line v-model="refillRecord.UnitsReceived"></v-text-field>
-                    <!--<v-text-field label="ContainerUnitID" single-line v-model="refillRecord.ContainerUnitID"></v-text-field>-->
-                    <v-select :items="units"  item-text="Name" item-value="ContainerUnitID" label="Units" v-model="refillRecord.ContainerUnitID" v-bind:disabled="readonly"></v-select>
-                    <v-text-field label="CAS Number" single-line v-model="refillRecord.CASNumber"></v-text-field>
-                </v-card-text>
-                <v-card-actions>
-                    <v-btn small flat color="green" v-on:click="on_accept()">Ok</v-btn>
-                    <v-btn small flat color="red" v-on:click="on_decline()">Cancel</v-btn>
-                </v-card-actions>
+            <v-card class="noborder" @keyup.enter="on_accept()">
+                <v-form ref="form"
+                        v-model="valid"
+                        lazy-validation>
+                    <v-card-title class="headline grey lighten-2" primary-title>
+                        {{header}}
+                    </v-card-title>
+                    <v-card-text>
+                        <v-text-field label="Manufacturer" v-model="refillRecord.Manufacturer"></v-text-field>
+                        <v-text-field label="Lot Number" v-model="refillRecord.LotNumber"></v-text-field>
+                        <v-text-field type="date" label="Date Manufactured" v-model="refillRecord.DateManufactured"></v-text-field>
+                        <v-text-field type="date" label="Date Received" v-model="refillRecord.DateReceived"></v-text-field>
+                        <v-text-field type="date" label="Date Expires" v-model="refillRecord.DateExpires"></v-text-field>
+                        <v-text-field typeof="number" v-model="refillRecord.UnitsReceived" required :suffix="measurementUnit" >
+                            <template #label>
+                                <span class="red--text"><strong>* </strong></span>Ammount Added
+                            </template>
+                        </v-text-field>
+                        <!--<v-text-field label="ContainerUnitID" v-model="refillRecord.ContainerUnitID"></v-text-field>-->
+                        <v-text-field label="Purchase Order" v-model="refillRecord.PurchaseOrderNumber"></v-text-field>
+                        <v-text-field label="CAS Number" v-model="cas_number" disabled></v-text-field>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-btn small flat color="green"
+                               :disabled="!valid"
+                               @click="on_accept">
+                            Submit
+                        </v-btn>
+                        <v-btn small flat color="red" v-on:click="on_decline()">Cancel</v-btn>
+                    </v-card-actions>
+                </v-form>
             </v-card>
         </v-dialog>
     </div>
@@ -40,7 +52,8 @@
                 text: null,
                 //text: "Enter text below",
                 cas_number: "",
-                units: []
+                measurementUnit: "",
+                valid: false
             }
         },
         created: function () {
@@ -52,24 +65,29 @@
             var instances = M.Modal.init(elems, {});
         },
         methods: {
-            open: function (refillRecord, header, units, callback) {
+            open: function (refillRecord, header, measurementUnit, cas_number, callback) {
                 console.table(refillRecord);
                 if (refillRecord) this.refillRecord = refillRecord;
                 if (header) this.header = header;
                 this.callback = callback;
                 this.cas_number = "";
                 this.textinput_dialog_active = true;
-                this.units = units;
+                this.measurementUnit = measurementUnit;
+                this.cas_number = cas_number;
             },
 
             on_accept: function () {
-                console.log("Closing text input dialog");
-                this.textinput_dialog_active = false;
-                if (this.callback) {
-                    this.callback('save', this.refillRecord);
+                if (this.$refs.form.validate()) {
+                    console.log("Closing text input dialog");
+                    this.textinput_dialog_active = false;
+                    if (this.callback) {
+                        this.callback('save', this.refillRecord);
+                    }
+                    //this.$emit('save', this.cas_number);
+                    this.$emit('save', this.refillRecord);
                 }
-                //this.$emit('save', this.cas_number);
-                this.$emit('save', this.refillRecord);
+
+                
             },
 
             on_decline: function () {

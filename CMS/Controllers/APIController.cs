@@ -1128,6 +1128,7 @@ namespace CMS.Controllers
         }
 
         [HttpPost("recordrefill")]
+        [Authorize(Roles = "admin,manage,edit,view")]
         public AjaxResult RecordRefill([FromBody] Refill refill_item)
         {
             AjaxResult result = new AjaxResult("APIController.UpdateLocation");
@@ -1141,7 +1142,7 @@ namespace CMS.Controllers
                         db.RecordRefill(refill_item, true);
                         msg = $"Refill successfully added to the database.";
                         //db.LogInfo(User.Identity.Name, "update", $"Refill \"{db.GetLocationName(location.LocationID)}\" ({location.LocationID}) added", false);
-                        db.LogInfo(User.Identity.Name, "update", $"Refill \"{refill_item.CASNumber}\" ({refill_item.RefillID}) added", false);
+                        db.LogInfo(User.Identity.Name, "update", $"Refill \"{refill_item.InventoryID}\" ({refill_item.RefillID}) added", false);
                     }
                     else
                     {

@@ -364,13 +364,13 @@ namespace DataModel
         public DateTime? DateReceived { get; set; }
         public DateTime? DateExpires { get; set; }
         [MaxLength(64)]
-        public string UnitsReceived { get; set; }
+        public double UnitsReceived { get; set; }
         [Required]
-        public int ContainerUnitID { get; set; }
-        [ForeignKey("ContainerUnitID")]
-        public ContainerUnit ContainerUnit { get; set; }
-        [MaxLength(32)]
-        public string CASNumber { get; set; }
+        public int InventoryID { get; set; }
+        [ForeignKey("InventoryID")]
+        public InventoryItem InventoryItem { get; set; }
+        [MaxLength(45)]
+        public string PurchaseOrderNumber { get; set; }
 }
 
     public class ContainerUnit

@@ -66,7 +66,7 @@
                                             <th style="width:80px;">Action</th>
                                             <th v-if="visible['barcode']">Barcode</th>
                                             <th v-if="visible['location']">Location</th>
-                                            <th v-if="visible['containername']">Container Name</th>
+                                            <!--<th v-if="visible['containername']">Container Name</th>-->
                                             <th v-if="visible['owner']">Owner</th>
                                             <th v-if="visible['datein']">Date In</th>
                                             <th v-if="visible['expiry']">Expiration<br />Date</th>
@@ -88,7 +88,7 @@
                                         <tr v-bind:class="item_class(item)" v-for='item in inventory' v-on:contextmenu="on_right_click(item, $event)" v-on:dblclick="on_row_dblclick(item, $event)" v-bind:class="{ active: item == selected_item } ">
                                             <td>
                                                 <v-btn icon flat class="blue--text inline-button" title="Hazard Info" v-on:click="on_show_hazards(item)"><v-icon small>info</v-icon></v-btn>
-                                                <v-btn icon flat class="purple--text inline-button" title="Refill" v-on:click="on_add_refill(item)"><v-icon small>replay</v-icon></v-btn>
+                                                <v-btn v-if="item.Refillable && can_edit" icon flat class="purple--text inline-button" title="Refill" v-on:click="on_add_refill(item)"><v-icon small>replay</v-icon></v-btn>
                                                 <v-btn icon flat class="green-text inline-button" title="Edit" v-on:click="on_edit_item(item)"><v-icon small>edit</v-icon></v-btn>
                                                 <v-btn icon flat class="red--text inline-button" title="Delete" v-on:click="on_delete_item(item)"><v-icon small>delete</v-icon></v-btn>
                                                 <!--
@@ -98,7 +98,7 @@
                                             </td>
                                             <td v-if="visible['barcode']">{{item.Barcode}}</td>
                                             <td v-if="visible['location']">{{nice_item_location(item)}}</td>
-                                            <td v-if="visible['containername']">{{item.ContainerName}}</td>
+                                            <!--<td v-if="visible['containername']">{{item.ContainerName}}</td>-->
                                             <td v-if="visible['owner']">{{get_embedded_name(item, 'Owner')}}</td>
                                             <td v-if="visible['datein']">{{get_date(item, 'DateIn')}}</td>
                                             <td v-if="visible['expiry']">{{get_date(item, 'ExpirationDate')}}</td>
@@ -200,6 +200,7 @@
         var UpdatedItem;
         var SQLDateRegex = /(\d\d\d\d-\d\d-\d\d)/;
         var userroles = "@roles";
+        var can_edit = @can_edit.ToString().ToLower();
         var ExpiringDate = moment().add(60, 'days');
         var is_user_readonly = !utils.has_role(userroles, ['admin', 'manage', 'edit']);
         var ChemicalsOfConcern;
@@ -680,8 +681,8 @@
                         DateReceived: moment().format('YYYY-MM-DD'),
                         DateExpires: null,
                         UnitsReceived: 0,
-                        ContainerUnitID: 0,
-                        CASNumber: ""
+                        InventoryID: inventory_item.InventoryID,
+                        PurchaseOrderNumber: ""
                     };
                     let config = {
                         header: "Record Refill",
@@ -692,7 +693,7 @@
                     this.is_refillinfo_visible = true;
                     console.log("get units on open", self.units);
 
-                    this.$refs['containerrefill'].open(new_item, "Record Refill", self.units, function (op, refill_item) {
+                    this.$refs['containerrefill'].open(new_item, "Record Refill", inventory_item.ContainerUnit.UnitAbbreviation, inventory_item.CASNumber, function (op, refill_item) {
                         if (op == 'save') {
                             console.log("Create new [location type] named " + refill_item?.RefillID + " : Second: " + refill_item?.DateReceived);
                             self.record_refill(refill_item, inventory_item);
@@ -702,6 +703,7 @@
 
                 record_refill: function (refill_item, inventory_item) {
                     let self = this;
+                    let remainingQuantity = 0;
 
                     console.log("on_create_location", refill_item);
                         api.axios_post({
@@ -715,7 +717,8 @@
                             self.notify("Record Refill", ajax_result.Message);
                             this.is_refillinfo_visible = false;
                                 if (inventory_item) {
-                                    inventory_item.RemainingQuantity += refill_item.UnitsReceived;
+                                    remainingQuantity = parseFloat(inventory_item.RemainingQuantity, 10) + parseFloat(refill_item.UnitsReceived, 10);
+                                    inventory_item.RemainingQuantity = 1 * remainingQuantity;
                                     console.table(inventory_item);
                                     self.save_edits(inventory_item);
                                 }

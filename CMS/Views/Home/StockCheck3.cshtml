@@ -33,13 +33,14 @@
                         <img src="~/assets/Barcodes-icon.png" style="height: 4em; padding-left: 8px;" v-if="IsMobile" />
                     </div>
                 </v-flex>
-
-                <v-flex sm3>
-                    <div style="display:flex; flex-direction:row; flex-wrap: wrap; align-items:center;">
-                        <v-text-field id='container-input' label="Container Name" placeholder="Container Name" v-model="container_name" v-on:keyup.enter="on_chemical_acquired"></v-text-field>
-                        <img src="~/assets/Barcodes-icon.png" style="height: 4em; padding-left: 8px;" v-if="IsMobile" />
-                    </div>
-                </v-flex>
+                <!--
+                 <v-flex sm3>
+                     <div style="display:flex; flex-direction:row; flex-wrap: wrap; align-items:center;">
+                         <v-text-field id='container-input' label="Container Name" placeholder="Container Name" v-model="container_name" v-on:keyup.enter="on_chemical_acquired"></v-text-field>
+                         <img src="~/assets/Barcodes-icon.png" style="height: 4em; padding-left: 8px;" v-if="IsMobile" />
+                     </div>
+                 </v-flex>
+                 -->
             </v-layout>
 
             <v-layout row wrap>
@@ -63,8 +64,8 @@
                                         <th>Last Updated</th>
                                         <!--
                                         <th>Confirm</th>
-                                        -->
                                         <th>Container Name</th>
+                                        -->
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -81,8 +82,8 @@
                                         <td>{{nice_date(item.LastInventoryDate)}}</td>
                                         <!--
                                         <td><v-btn icon @@click="open_item_dialog(item)"><v-icon large>open_in_browser</v-icon></v-btn></td>
-                                        -->
                                         <td>{{item.ContainerName}}</td>
+                                        -->
                                     </tr>
                                 </tbody>
                             </table>

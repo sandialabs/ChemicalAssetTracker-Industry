@@ -13,6 +13,7 @@ using CMS.Services;
 using Newtonsoft.Json.Serialization;
 using Microsoft.AspNetCore.StaticFiles;
 using DataModel;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 namespace CMS
 {
@@ -81,6 +82,16 @@ namespace CMS
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(user_logout_time_minutes);
             });
 
+            services.Configure<KestrelServerOptions>(options =>
+            {
+                options.AllowSynchronousIO = true;
+            });
+
+            // If using IIS:
+            services.Configure<IISServerOptions>(options =>
+            {
+                options.AllowSynchronousIO = true;
+            });
             services.Configure<IISOptions>(options => options.ForwardClientCertificate = false);
             // This is a service that can be injected to support user account management
             services.AddScoped<IAccountHelper, AccountHelper>();

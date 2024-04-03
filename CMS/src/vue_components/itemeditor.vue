@@ -37,7 +37,8 @@
                             <v-select :items="owners" item-text="Name" item-value="OwnerID" label="Owner" v-model="itemdata.OwnerID" v-bind:disabled="readonly"></v-select>
                         </td>
                         <td>
-                            <v-text-field v-model="itemdata.ContainerName" placeholder="Container Name" v-bind:readonly="readonly" @input="on_modified" />
+                            &nbsp;
+                            <!--<v-text-field v-model="itemdata.ContainerName" placeholder="Container Name" v-bind:readonly="readonly" @input="on_modified" />-->
                             <!--<v-select :items="groups" item-text="Name" item-value="GroupID" label="Storage Group" v-model="itemdata.GroupID" v-bind:disabled="readonly"></v-select>-->
                         </td>
                     </tr>
