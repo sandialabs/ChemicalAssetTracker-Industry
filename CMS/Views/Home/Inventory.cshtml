@@ -64,7 +64,7 @@
                                     <thead>
                                         <tr>
                                             <th style="width:80px;">Action</th>
-                                            <th v-if="visible['barcode']">Barcode</th>
+                                            <th v-if="visible['barcode']">Item ID</th>
                                             <th v-if="visible['location']">Location</th>
                                             <!--<th v-if="visible['containername']">Container Name</th>-->
                                             <th v-if="visible['owner']">Owner</th>
@@ -73,6 +73,7 @@
                                             <th v-if="visible['chemical']">Chemical Name</th>
                                             <th v-if="visible['casnumber']">CAS #</th>
                                             <th v-if="visible['group']">Storage Group</th>
+                                            <th v-if="visible['quantity']">Number of<br />Containers</th>
                                             <th v-if="visible['size']">Container<br />Size</th>
                                             <th v-if="visible['remaining']">Remaining<br />Quantity</th>
                                             <th v-if="visible['verified']">Stock<br />Checked</th>
@@ -105,6 +106,7 @@
                                             <td v-if="visible['chemical']">{{item.ChemicalName}}</td>
                                             <td v-if="visible['casnumber']">{{item.CASNumber}}</td>
                                             <td v-if="visible['group']">{{get_embedded_name(item, 'Group')}}</td>
+                                            <td v-if="visible['quantity']">{{item.Quantity}}</td>
                                             <td v-if="visible['size']">{{item.ContainerSize}} {{item.ContainerUnit?.UnitAbbreviation}}</td>
                                             <td v-if="visible['remaining']">{{item.RemainingQuantity}} {{item.ContainerUnit?.UnitAbbreviation}} ({{ Math.round(item.RemainingQuantity / item.ContainerSize * 100) }}%)</td>
                                             <td v-if="visible['verified']">{{get_date(item, 'StockCheckTime')}}</td>
@@ -123,7 +125,7 @@
                                                 <a v-for="(href, ix) in get_sds_hrefs(item)" :key='ix' target="SDS" v-bind:href="href"><v-icon>find_in_page</v-icon></a>
                                             </td>
                                             <td v-if="visible['notes']" style="min-width: 180px;">{{item.Notes}}</td>
-                                            <td v-if="visible['refillable']" style="min-width: 180px;">{{item.Refillable}}</td>
+                                            <td v-if="visible['refillable']"><v-icon large v-if="item.Refillable == true" class="green--text">check</v-icon></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -291,20 +293,19 @@
                 move_destination: undefined,
                 visible: {
                     barcode: true,
-                    casnumber: true,
-                    chemical: true,
                     location: true,
-                    containername: true,
-                    datein: true,
-                    expiry: true,
+                    chemical: true,
+                    casnumber: true,
+                    datein: false,
+                    expiry: false,
                     owner: true,
-                    group: true,
+                    group: false,
+                    quantity: true,
                     size: true,
                     remaining: true,
                     verified: true,
                     state: true,
                     notes: true,
-                    units: true,
                     sds: true,
                     hazards: true,
                     refillable: true,
@@ -746,6 +747,7 @@
                         CASNumber: "",
                         ChemicalName: "",
                         ContainerName: "",
+                        Quantity: null,
                         ContainerSize: null,
                         DateIn: null,
                         ExpirationDate: null,
@@ -960,11 +962,6 @@
 @section Styles {
 
     <style>
-
-        #inventory_table td:nth-child(2), th:nth-child(2), td:nth-child(5), th:nth-child(5), td:nth-child(6), th:nth-child(6), td:nth-child(9), th:nth-child(9) {
-            display: none;
-        }
-
         .loading {
             width: 100vw;
             height: 80vh;

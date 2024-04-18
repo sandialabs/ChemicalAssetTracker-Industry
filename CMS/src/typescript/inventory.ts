@@ -19,6 +19,7 @@ export interface IInventoryItem {
     OwnerID?: number;
     DateIn?: string;
     ExpirationDate?: string;
+    Quantity?: number;
     ContainerSize?: number;
     RemainingQuantity?: number;
     Units: string;
@@ -54,6 +55,7 @@ export class InventoryItem {
     OwnerID?: number;
     DateIn?: Date;
     ExpirationDate?: Date;
+    Quantity?: number;
     ContainerSize?: number;
     RemainingQuantity?: number;
     Units: string;
@@ -88,6 +90,7 @@ export class InventoryItem {
         this.OwnerID = i.OwnerID;
         if (i.DateIn) this.DateIn = new Date(i.DateIn);
         if (i.ExpirationDate) this.ExpirationDate = new Date(i.ExpirationDate);
+        this.Quantity = i.Quantity;
         this.ContainerSize = i.ContainerSize;
         this.RemainingQuantity = i.RemainingQuantity;
         this.Units = i.Units;

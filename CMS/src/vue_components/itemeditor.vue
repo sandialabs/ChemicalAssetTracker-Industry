@@ -23,7 +23,7 @@
                             <v-text-field background-color="#8F8" v-model="itemdata.ChemicalName" label="Name" v-bind:readonly="readonly"></v-text-field>
                         </td>
                         <td>
-                            <v-text-field background-color="#8F8" v-model="itemdata.Barcode" label="BARCODE" v-bind:disabled="readonly"></v-text-field>
+                            <v-text-field background-color="#8F8" v-model="itemdata.Barcode" label="Item ID" v-bind:disabled="readonly"></v-text-field>
                         </td>
                         <td>
                             <v-text-field background-color="#8F8" v-model="itemdata.CASNumber" label="CAS #" v-bind:readonly="readonly" />
@@ -74,7 +74,7 @@
                             <v-text-field type="date" label="Stock Checked" v-model="itemdata.StockCheckTime" v-bind:readonly="readonly" max="todays_date"></v-text-field>
                         </td>
                         <td>
-                            <v-select :items="units" item-text="Name" item-value="ContainerUnitID" label="Owner" v-model="itemdata.ContainerUnitID" v-bind:disabled="readonly" @change="on_modified"></v-select>
+                            <v-text-field type="number" v-model="itemdata.Quantity" label="Number of Containers" v-bind:readonly="readonly"></v-text-field>
                         </td>
                     </tr>
                 </table>

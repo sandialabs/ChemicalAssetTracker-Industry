@@ -330,10 +330,15 @@ def generate_locations(db):
 def generate_inventory(count, db, verbose=False):
     sdslist = []
     state_list = ['solid', 'liquid', 'gas']
+#    unit_list = {
+#        'solid': ['g', 'kg', 'mg', 'ft3', 'cm3', 'lb', 'y3', 'tn', 'mt'],
+#        'gas': ['ft3', 'cm3'],
+#        'liquid': ['L', 'mL', 'gal', 'bbl']
+#    }
     unit_list = {
-        'solid': ['g', 'kg', 'mg', 'ft3', 'cm3'],
-        'gas': ['ft3', 'cm3'],
-        'liquid': ['L', 'mL']
+        'solid': [3, 4, 6, 8, 1, 9, 11, 12, 13],
+        'gas': [8, 1],
+        'liquid': [5, 7, 10, 14]
     }
     
     chemicals = generate_list_of_chemicals('./Data/casdata.csv')
@@ -382,15 +387,15 @@ def generate_inventory(count, db, verbose=False):
         sds = random.choice(sdslist)
 
         state = random.choice(state_list)
-        units = random.choice(unit_list[state])
+        unitIDs = random.choice(unit_list[state])
         container_size = random.choice([5, 10, 15, 20, 25, 30, 35, 40, 45, 50])
         remaining = random.randint(1, container_size)
         flags = generate_cas_flags(casnum)
 
-        sql = "insert into InventoryItems (Barcode, CASNumber, ChemicalName, LocationID,  Flags, OwnerID, GroupID, DateIn, ExpirationDate, State, ContainerSize, Units, RemainingQuantity, SDS, DisposeFlag) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 0)"
+        sql = "insert into InventoryItems (Barcode, CASNumber, ChemicalName, LocationID,  Flags, OwnerID, GroupID, DateIn, ExpirationDate, State, ContainerSize, ContainerUnitID, RemainingQuantity, SDS, DisposeFlag) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 0)"
         rc = db.execute_nonquery(sql, (barcode, casnum, chemname, location_id,
                                flags, owner_id, group_id, now, expiry,
-                               state, container_size, units, remaining, sds))
+                               state, container_size, unitIDs, remaining, sds))
 
 
         if (i % 10) == 0:

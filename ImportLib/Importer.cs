@@ -62,12 +62,12 @@ namespace ImportLib
         {
             DatabaseValidationResult result = new DatabaseValidationResult();
 
-            if (!sqlite_file.ToLower().EndsWith(".db"))
-            {
-                result.AddMessage("The import file must be a CMS database file (.db)");
-                result.Success = false;
-                return result;
-            }
+            //if (!sqlite_file.ToLower().EndsWith(".db"))
+            //{
+            //    result.AddMessage("The import file must be a CMS database file (.db)");
+            //    result.Success = false;
+            //    return result;
+            //}
 
             TaskTimer t1 = new TaskTimer("timer");
             Log($"Validating import file {sqlite_file}");
@@ -381,6 +381,10 @@ namespace ImportLib
 
             string casnumber = excelfile.GetRowValue(row, "CAS #");
             string chemicalname = excelfile.GetRowValue(row, "Chemical Name");
+            bool refillable = false;
+            bool.TryParse(excelfile.GetRowValue(row, "Refillable"), out refillable);
+            int quantity = 0;
+            Int32.TryParse(excelfile.GetRowValue(row, "Quantity"), out quantity);
 
             DataModel.InventoryItem newitem = new DataModel.InventoryItem()
             {
@@ -397,6 +401,8 @@ namespace ImportLib
                 Units = excelfile.GetRowValue(row, "Units"),
                 State = excelfile.GetRowValue(row, "State"),
                 Flags = flags.DatabaseString(),
+                Refillable = refillable,
+                Quantity = quantity,
                 // PH: InventoryStatus will be removed in new audit model
                 //InventoryStatusID = (olditem.InventoryStatus == 0 ? (int?)null : olditem.InventoryStatus),
                 Notes = excelfile.GetRowValue(row, "Notes")

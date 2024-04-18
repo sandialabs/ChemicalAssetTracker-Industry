@@ -134,10 +134,11 @@ namespace CMS.Services
             {
                 UserInfo info = new UserInfo(user);
                 var roles = await m_user_manager.GetRolesAsync(user);
-                foreach (string role in roles) info.Roles.Add(role);
+                //foreach (string role in roles) info.Roles.Add(role);
+                info.Roles = roles.ToList();
                 result.Add(info);
             }
-            return result;
+            return result.ToList();
         }
 
 
@@ -257,7 +258,7 @@ namespace CMS.Services
 
         public List<UserInfo> GetUsers()
         {
-            return GetUsersAsync().Result;
+            return GetUsersAsync().Result.ToList();
         }
 
         public List<UserInfo> GetUsers(int[] location_ids)
