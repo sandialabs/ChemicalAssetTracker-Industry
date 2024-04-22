@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 //using static ClosedXML.Excel.XLPredefinedFormat;
 
@@ -1075,6 +1076,7 @@ namespace DataModel
         /// <summary>
         /// The item that was audited
         /// </summary>
+        [AllowNull]
         public InventoryItem Item { get; set; }
 
         public int? LocationID { get; set; }

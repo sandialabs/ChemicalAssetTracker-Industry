@@ -382,6 +382,10 @@ namespace DataModel
             // putting an index on a large text column causes mysql error 
             //modelBuilder.Entity<GHSData>().HasIndex(x => x.ChemicalName);
             modelBuilder.Entity<Attachment>().HasIndex(x => x.Login);
+            modelBuilder.Entity<InventoryAudit>().HasOne("DataModel.InventoryItem", "Item")
+                        .WithMany()
+                        .HasForeignKey("InventoryID")
+                        .OnDelete(DeleteBehavior.Cascade);
             base.OnModelCreating(modelBuilder);
         }
 
