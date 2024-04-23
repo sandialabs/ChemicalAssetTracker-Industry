@@ -9,7 +9,7 @@
                     <v-card-title class="headline grey lighten-2" primary-title>
                         {{header}}
                     </v-card-title>
-                    <v-card-text>
+                    <v-card-text v-if="refillRecord">
                         <v-text-field label="Manufacturer" v-model="refillRecord.Manufacturer"></v-text-field>
                         <v-text-field label="Lot Number" v-model="refillRecord.LotNumber"></v-text-field>
                         <v-text-field type="date" label="Date Manufactured" v-model="refillRecord.DateManufactured"></v-text-field>
@@ -48,6 +48,7 @@
         data: function () {
             return {
                 textinput_dialog_active: false,
+                refillRecord: null,
                 header: "Input",
                 text: null,
                 //text: "Enter text below",

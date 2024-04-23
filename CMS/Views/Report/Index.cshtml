@@ -196,6 +196,7 @@
                         verbose: this.debug,
                         onsuccess: function (response) {
                             if (self.debug) console.log("run_report response:", response);
+                            console.log(JSON.stringify(response.Data));
                             let rows = response.Data.Rows;
                             let success = response.Data.Result;
                             let rowcount = response.Data.RowsRead;
@@ -258,7 +259,7 @@
                     rows.forEach(function (row) {
                         values = [];
                         column_names.forEach(function (col) {
-                            let colval = row[col].toString();
+                            let colval = row[col]?.toString() ?? "";
                             let escaped = self.escape_csv(colval);
                             values.push(escaped);
                         });

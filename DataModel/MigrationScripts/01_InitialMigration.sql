@@ -219,6 +219,7 @@ CREATE TABLE `InventoryItems` (
     `OwnerID` int NULL,
     `DateIn` datetime(6) NULL,
     `ExpirationDate` datetime(6) NULL,
+    `Quantity` INT NULL,
     `ContainerSize` double NULL,
     `RemainingQuantity` double NULL,
     `Units` varchar(64) NULL,

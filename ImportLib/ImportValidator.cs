@@ -281,6 +281,7 @@ namespace ImportLib
         {
             // split the location name into its component parts
             string[] parts = CMSDB.ParseLocation(location_name);
+            Console.WriteLine("Location Name In: " + location_name);
             // partial_location will be built up starting at the root
             string partial_location = "/";
             // get the location that is the attachment point, and get its type
@@ -292,8 +293,10 @@ namespace ImportLib
                 partial_location += (part + "/");
                 // get that location
                 string target_location = AttachmentLocation.Path + partial_location;
+                Console.WriteLine("Path: " + AttachmentLocation.Path);
                 // it should be a valid location (we require locations to be pre-initialized)
-                DataModel.StorageLocation child_loc = m_db.Locations.FindPath(target_location);
+                Console.WriteLine("Target Location: " + target_location);
+                DataModel.StorageLocation child_loc = m_db.Locations.FindPath(location_name);
                 if (child_loc == null)
                 {
                     // this is the old code that initializes location types on the fly

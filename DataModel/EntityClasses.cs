@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 //using static ClosedXML.Excel.XLPredefinedFormat;
 
@@ -363,7 +364,7 @@ namespace DataModel
         public DateTime? DateManufactured { get; set; }
         public DateTime? DateReceived { get; set; }
         public DateTime? DateExpires { get; set; }
-        [MaxLength(64)]
+        [Required]
         public double UnitsReceived { get; set; }
         [Required]
         public int InventoryID { get; set; }
@@ -418,6 +419,7 @@ namespace DataModel
         public Owner Owner { get; set; }
         public DateTime? DateIn { get; set; }
         public DateTime? ExpirationDate { get; set; }
+        public int? Quantity { get; set; }
         public double? ContainerSize { get; set; }
         public double? RemainingQuantity { get; set; }
         [MaxLength(64)]
@@ -1074,6 +1076,7 @@ namespace DataModel
         /// <summary>
         /// The item that was audited
         /// </summary>
+        [AllowNull]
         public InventoryItem Item { get; set; }
 
         public int? LocationID { get; set; }

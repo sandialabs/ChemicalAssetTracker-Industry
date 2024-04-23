@@ -471,7 +471,7 @@ namespace CMS.Controllers
             AjaxResult result = new AjaxResult("DatabaseController.GetUsers");
             try
             {
-                List<UserInfo> users = m_account_helper.GetUsers();
+                List<UserInfo> users = m_account_helper.GetUsers().ToList();
                 result.Succeed($"{users.Count} users successfully read", "Users", users);
             }
             catch (Exception ex)

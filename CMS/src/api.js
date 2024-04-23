@@ -441,6 +441,7 @@ export function new_inventory_item_template() {
         CASNumber: "",
         ChemicalName: "",
         ContainerName: "",
+        Quantity: null,
         ContainerSize: null,
         DateIn: new Date(),
         ExpirationDate: null,
