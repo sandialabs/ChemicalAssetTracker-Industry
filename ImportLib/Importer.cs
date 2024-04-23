@@ -283,6 +283,7 @@ namespace ImportLib
 
             foreach (ExcelRow row in inventory_rows)
             {
+                Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(row).ToString());
                 if (ImportNewItem(excel, db, row, result)) items_imported += 1;
             }
             db.SaveChanges();
