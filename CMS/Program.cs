@@ -4,6 +4,7 @@ using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
 namespace CMS
 {
@@ -77,7 +78,9 @@ namespace CMS
             {
             }
 
-            BuildWebHost(webbuilder_args.ToArray()).Run();
+            //BuildWebHost(webbuilder_args.ToArray()).Run();
+
+            CreateHostBuilder(args).Build().Run();
         }
 
         public static void Banner(List<string> lines)
@@ -109,24 +112,59 @@ namespace CMS
         }
 
 
-        public static IWebHost BuildWebHost(string[] args)
-        {
-            if (UsingProxy)
-            {
-                Console.WriteLine("BuildWebHost is using reverse proxy mode");
-            }
-            return WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>()
-                // .UseUrls($"http://*:{ListenPort}/")
-                .UseKestrel(options =>
-                {
-                    options.Listen(IPAddress.Any, ListenPort, listenOptions =>
+        //public static IWebHost BuildWebHost(string[] args)
+        //{
+        //    if (UsingProxy)
+        //    {
+        //        Console.WriteLine("BuildWebHost is using reverse proxy mode");
+        //    }
+        //    return WebHost.CreateDefaultBuilder(args)
+        //        .UseStartup<Startup>()
+        //        // .UseUrls($"http://*:{ListenPort}/")
+        //        .UseKestrel(options =>
+        //        {
+        //            options.Listen(IPAddress.Any, ListenPort, listenOptions =>
+        //            {
+        //                if (_certificate != null)
+        //                    listenOptions.UseHttps(_certificate);
+        //            });
+        //        })
+        //        .Build();
+        //}
+
+
+        //public static IHostBuilder CreateHostBuilder(string[] args) =>
+        //    Host.CreateDefaultBuilder(args)
+        //.ConfigureWebHostDefaults(webBuilder =>
+        //{
+        //    webBuilder.ConfigureKestrel(options =>
+        //    {
+        //        options.Listen(IPAddress.Any, ListenPort, listenOptions =>
+        //        {
+        //            if (_certificate != null)
+        //                listenOptions.UseHttps(_certificate);
+        //        });
+        //    })
+        //    .UseStartup<Startup>();
+        //});
+
+
+
+            public static IHostBuilder CreateHostBuilder(string[] args) =>
+                Host.CreateDefaultBuilder(args)
+                    .ConfigureWebHostDefaults(webBuilder =>
                     {
-                        if (_certificate != null)
-                            listenOptions.UseHttps(_certificate);
+                        webBuilder.ConfigureKestrel(options =>
+                        {
+                            options.Listen(IPAddress.Any, ListenPort, listenOptions =>
+                            {
+                                if (_certificate != null)
+                                    listenOptions.UseHttps(_certificate);
+                            });
+                        })
+                        .UseStartup<Startup>();
                     });
-                })
-                .Build();
-        }
+
+
     }
 }

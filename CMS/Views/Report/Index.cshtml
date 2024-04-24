@@ -32,6 +32,8 @@
                             <v-card-text>
                                 <v-layout>
                                     <location :debug='false' v-show="show_widget('locationpicker')" ref="location" v-on:select="on_location_selected" v-on:ready="on_locations_ready"></location>
+                                    <v-text-field id='chemical-input' label="Chemical Name" placeholder="Chemical Name" v-model="chemical_name" v-on:keyup.enter="on_chemical_acquired"></v-text-field>
+                                    <!--<v-text-field id='container-input' label="Container Name" placeholder="Container Name" v-model="container_name" v-on:keyup.enter="on_chemical_acquired"></v-text-field>-->
                                     <v-text-field v-show="show_widget('fromdate')" class="date-field" type="date" label="From Date" v-model="fromdate"></v-text-field>
                                     <v-text-field v-show="show_widget('todate')" class="date-field" type="date" label="To Date" v-model="todate"></v-text-field>
                                     <v-text-field class="number-field" type="number" label="Max Rows" v-model="maxrows"></v-text-field>
@@ -105,6 +107,7 @@
                 reports: [],
                 active_report: { ReportName: '' },
                 selected_location: { LocationID: 0, Path: '' },
+                chemical_name: "",
                 fromdate: moment().subtract(1, 'month').format('YYYY-MM-DD'),
                 todate: moment().format('YYYY-MM-DD'),
                 maxrows: 1000,
@@ -163,13 +166,24 @@
                     let url = utils.root_url() + "Report/runreport";
 
                     this.$refs.location.collapse();
+                    let chemical_name_param = "";
+                    let container_name_param = "";
 
                     let postdata = {
                         ReportID: report.ReportID,
                         Parameters: [],
                         MaxRows: this.maxrows
                     };
+
+                    console.log("Location", this.selected_location.LocationID);
+                    console.log("Report ID", report.ReportID);
+                    console.log("Chemical name", this.chemical_name);
+
                     if (this.show_widget('locationpicker')) postdata.Parameters.push({ Name: 'Path', Datatype: 'location', Value: this.selected_location.LocationID });
+                    if (this.chemical_name != "" && this.chemical_name != null) chemical_name_param = this.chemical_name;
+                    postdata.Parameters.push({ Name: 'ChemicalName', Datatype: 'string', Value: chemical_name_param });
+                    // if (this.container_name != "" && this.container_name != null) container_name_param = this.container_name;
+                    // postdata.Parameters.push({ Name: 'ContainerName', Datatype: 'string', Value: container_name_param });
                     if (this.show_widget('fromdate')) postdata.Parameters.push({ Name: 'FromDate', Datatype: 'datetime', Value: this.nice_date(this.fromdate) });
                     if (this.show_widget('todate')) {
                         postdata.Parameters.push({ Name: 'ToDate', Datatype: 'datetime', Value: this.nice_date(this.todate, true) });
@@ -182,6 +196,7 @@
                         verbose: this.debug,
                         onsuccess: function (response) {
                             if (self.debug) console.log("run_report response:", response);
+                            console.log(JSON.stringify(response.Data));
                             let rows = response.Data.Rows;
                             let success = response.Data.Result;
                             let rowcount = response.Data.RowsRead;
@@ -244,7 +259,7 @@
                     rows.forEach(function (row) {
                         values = [];
                         column_names.forEach(function (col) {
-                            let colval = row[col].toString();
+                            let colval = row[col]?.toString() ?? "";
                             let escaped = self.escape_csv(colval);
                             values.push(escaped);
                         });
@@ -337,6 +352,15 @@
                     if (this.debug) console.log("on_location_selected", loc.Path);
                     if (loc) {
                         this.selected_location = loc;
+                        if (this.active_report.Description) this.run_report(this.active_report);
+                    }
+                },
+
+                on_chemical_acquired: function () {
+                    let self = this;
+
+                    if (this.debug) console.log("on_chemical_acquired", self.chemical_name);
+                    if (self.chemical_name) {
                         if (this.active_report.Description) this.run_report(this.active_report);
                     }
                 },

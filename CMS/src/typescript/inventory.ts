@@ -13,11 +13,13 @@ export interface IInventoryItem {
     CASNumber: string;
     ChemicalName: string;
     LocationID: number;
+    ContainerName: string;
     SiteID: number;
     GroupID?: number;
     OwnerID?: number;
     DateIn?: string;
     ExpirationDate?: string;
+    Quantity?: number;
     ContainerSize?: number;
     RemainingQuantity?: number;
     Units: string;
@@ -34,6 +36,8 @@ export interface IInventoryItem {
     //----------------------------------------------------------------
 
     MaterialType: EMaterialType;
+    ContainerUnitID: number;
+    Refillable: boolean;
     Custom1: string;
     Custom2: string;
     Custom3: string;
@@ -45,11 +49,13 @@ export class InventoryItem {
     CASNumber: string;
     ChemicalName: string;
     LocationID: number;
+    ContainerName: string;
     SiteID: number;
     GroupID?: number;
     OwnerID?: number;
     DateIn?: Date;
     ExpirationDate?: Date;
+    Quantity?: number;
     ContainerSize?: number;
     RemainingQuantity?: number;
     Units: string;
@@ -66,6 +72,8 @@ export class InventoryItem {
     //----------------------------------------------------------------
 
     MaterialType: EMaterialType;
+    ContainerUnitID: number;
+    Refillable: boolean;
     Custom1: string;
     Custom2: string;
     Custom3: string;
@@ -76,11 +84,13 @@ export class InventoryItem {
         this.CASNumber = i.CASNumber;
         this.ChemicalName = i.ChemicalName;
         this.LocationID = i.LocationID;
+        this.ContainerName = i.ContainerName;
         this.SiteID = i.SiteID;
         this.GroupID = i.GroupID;
         this.OwnerID = i.OwnerID;
         if (i.DateIn) this.DateIn = new Date(i.DateIn);
         if (i.ExpirationDate) this.ExpirationDate = new Date(i.ExpirationDate);
+        this.Quantity = i.Quantity;
         this.ContainerSize = i.ContainerSize;
         this.RemainingQuantity = i.RemainingQuantity;
         this.Units = i.Units;
@@ -96,6 +106,8 @@ export class InventoryItem {
         //----------------------------------------------------------------
 
         this.MaterialType = i.MaterialType;
+        this.ContainerUnitID = i.ContainerUnitID;
+        this.Refillable = i.Refillable;
         this.Custom1 = i.Custom1;
         this.Custom2 = i.Custom2;
         this.Custom3 = i.Custom3;

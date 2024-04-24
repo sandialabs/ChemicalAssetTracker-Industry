@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using CMS.Services;
 using Common;
 using DataModel;
@@ -222,7 +223,7 @@ namespace CMS.Controllers
                 string username = User.Identity.Name;
 
                 if (User.Identity.Name == null) throw new Exception("You have been logged out due to inactivity.");
-
+                
                 InventoryAudit audit = new InventoryAudit
                 {
                     AuditTime = DateTime.Now,
@@ -232,7 +233,9 @@ namespace CMS.Controllers
                     LocationID = request.LocationID,
                     User = username
                 };
+
                 db.InventoryAudits.Add(audit);
+
                 item.LastInventoryDate = DateTime.Now;
                 db.LogInfo(username, "audit", $"Audit record added for {request.Barcode}.  Previous location {item.LocationID}.  Current location {request.LocationID}", true);  // will call SaveChanges
 

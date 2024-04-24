@@ -66,6 +66,11 @@ namespace CMS.Controllers
         {
             DatabaseResult result = null;
             string sql = m_query.QueryText;
+
+            Console.WriteLine("** Inspection **");
+            Console.WriteLine(sql);
+            Console.WriteLine(parameter_defs);
+
             if (!String.IsNullOrEmpty(WhereClause)) sql = sql.Replace("@Where", $" WHERE {WhereClause}");
             sql +=  $" limit {m_maxrows}";
             List<DatabaseQueryParameter> bindings = new List<DatabaseQueryParameter>();

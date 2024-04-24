@@ -160,16 +160,39 @@ CREATE TABLE `StorageLocations` (
     CONSTRAINT `FK_StorageLocations_LocationTypes_LocationTypeID` FOREIGN KEY (`LocationTypeID`) REFERENCES `LocationTypes` (`LocationTypeID`) ON DELETE CASCADE
 );
 
+CREATE TABLE `ContainerUnits` (
+  `ContainerUnitID` int NOT NULL,
+  `Name` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `UnitAbbreviation` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  CONSTRAINT `PK_ContainerUnits` PRIMARY KEY (`ContainerUnitID`),
+);
+
+CREATE TABLE `Refills` (
+  `RefillID` int NOT NULL AUTO_INCREMENT,
+  `Manufacturer` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `LotNumber` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `DateManufactured` datetime DEFAULT NULL,
+  `DateReceived` datetime DEFAULT NULL,
+  `DateExpires` datetime DEFAULT NULL,
+  `UnitsReceived` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ContainerUnitID` int NOT NULL,
+  `CASNumber` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  CONSTRAINT `PK_Refills` PRIMARY KEY (`RefillID`),
+  CONSTRAINT `fk_Refills_ContainerUnits1` FOREIGN KEY (`ContainerUnitID`) REFERENCES `ContainerUnits` (`ContainerUnitID`)
+);
+
 CREATE TABLE `InventoryItems` (
     `InventoryID` int NOT NULL AUTO_INCREMENT,
     `Barcode` varchar(64) NOT NULL,
     `CASNumber` varchar(32) NULL,
     `ChemicalName` varchar(256) NULL,
     `LocationID` int NOT NULL,
+    `ContainerName` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
     `GroupID` int NULL,
     `OwnerID` int NULL,
     `DateIn` datetime(6) NULL,
     `ExpirationDate` datetime(6) NULL,
+    `Quantity` INT NULL,
     `ContainerSize` double NULL,
     `RemainingQuantity` double NULL,
     `Units` varchar(64) NULL,
@@ -188,7 +211,10 @@ CREATE TABLE `InventoryItems` (
     `Custom1` varchar(256) NULL,
     `Custom2` varchar(256) NULL,
     `Custom3` varchar(256) NULL,
+    `ContainerUnitID` int DEFAULT NULL,
+    `Refillable` tinyint DEFAULT NULL,
     CONSTRAINT `PK_InventoryItems` PRIMARY KEY (`InventoryID`),
+    CONSTRAINT `FK_InventoryItems_ContainerUnits1` FOREIGN KEY (`ContainerUnitID`) REFERENCES `ContainerUnits` (`ContainerUnitID`),
     CONSTRAINT `FK_InventoryItems_StorageGroups_GroupID` FOREIGN KEY (`GroupID`) REFERENCES `StorageGroups` (`GroupID`) ON DELETE NO ACTION,
     CONSTRAINT `FK_InventoryItems_InventoryStatusNames_InventoryStatusID` FOREIGN KEY (`InventoryStatusID`) REFERENCES `InventoryStatusNames` (`InventoryStatusID`) ON DELETE NO ACTION,
     CONSTRAINT `FK_InventoryItems_StorageLocations_LocationID` FOREIGN KEY (`LocationID`) REFERENCES `StorageLocations` (`LocationID`) ON DELETE CASCADE,

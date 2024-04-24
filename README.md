@@ -58,7 +58,7 @@ C> python managedb.py -clean -institution ROOT
 
 ```
 C> cd ..\Scripts
-C> python generate-testdata.py -for Iraq
+C> python generate_testdata.py -for Iraq
 ```
 
 ### Step 3: Build and run the website
@@ -135,7 +135,7 @@ In order to deploy CAT to Azure, you will need to have an Azure account with an 
 
     > Database=cms; Data Source=servername.mysql.database.azure.com; User Id=catadmin@servername; Password=whatever;
 
-    -   Repeat the process above to create a connection string names _DefaultConnection_. The database name for this connection string will be "CMSUsers". The other values will be the same.
+    -   Repeat the process above to create a connection string names _DefaultConnection_. The database name for this connection string will be "cmsusers". The other values will be the same.
     -   Click the "Save" button at the top of the Configuration page to update the App Service and restart it with the new settings. Browse to the app to confirm that it now runs correctly and presents you with the login page.
 
 ## Projects

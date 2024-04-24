@@ -471,7 +471,7 @@ namespace CMS.Controllers
             AjaxResult result = new AjaxResult("DatabaseController.GetUsers");
             try
             {
-                List<UserInfo> users = m_account_helper.GetUsers();
+                List<UserInfo> users = m_account_helper.GetUsers().ToList();
                 result.Succeed($"{users.Count} users successfully read", "Users", users);
             }
             catch (Exception ex)
@@ -518,6 +518,7 @@ namespace CMS.Controllers
                     });
                     result.Set("ThisUser", this_user);
                     result.Succeed($"{users.Count} users successfully read", "Users", users);
+                    //result.Succeed($"[temp] users successfully read", "Users", new List<UserInfo>());
                 }
             }
             catch (Exception ex)

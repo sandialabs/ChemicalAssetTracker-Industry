@@ -23,7 +23,7 @@
                             <v-text-field background-color="#8F8" v-model="itemdata.ChemicalName" label="Name" v-bind:readonly="readonly"></v-text-field>
                         </td>
                         <td>
-                            <v-text-field background-color="#8F8" v-model="itemdata.Barcode" label="BARCODE" v-bind:disabled="readonly"></v-text-field>
+                            <v-text-field background-color="#8F8" v-model="itemdata.Barcode" label="Item ID" v-bind:disabled="readonly"></v-text-field>
                         </td>
                         <td>
                             <v-text-field background-color="#8F8" v-model="itemdata.CASNumber" label="CAS #" v-bind:readonly="readonly" />
@@ -37,7 +37,9 @@
                             <v-select :items="owners" item-text="Name" item-value="OwnerID" label="Owner" v-model="itemdata.OwnerID" v-bind:disabled="readonly"></v-select>
                         </td>
                         <td>
-                            <v-select :items="groups" item-text="Name" item-value="GroupID" label="Storage Group" v-model="itemdata.GroupID" v-bind:disabled="readonly"></v-select>
+                            &nbsp;
+                            <!--<v-text-field v-model="itemdata.ContainerName" placeholder="Container Name" v-bind:readonly="readonly" @input="on_modified" />-->
+                            <!--<v-select :items="groups" item-text="Name" item-value="GroupID" label="Storage Group" v-model="itemdata.GroupID" v-bind:disabled="readonly"></v-select>-->
                         </td>
                     </tr>
                     <tr>
@@ -57,10 +59,22 @@
                             <v-text-field type="number" label="Container Size" v-model="itemdata.ContainerSize" placeholder="Size" v-bind:readonly="readonly" />
                         </td>
                         <td>
+                            <v-select :items="units2" label="Units" v-model="itemdata.Units" v-bind:disabled="readonly"></v-select>
+                        </td>
+                        <td>
+                            <v-switch v-model="itemdata.Refillable" label="Refillable" v-bind:readonly="readonly" @input="on_modified" color="blue"></v-switch>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
                             <v-text-field type="number" v-model="itemdata.RemainingQuantity" label="Remaining" v-bind:readonly="readonly"></v-text-field>
                         </td>
                         <td>
-                            <v-select :items="units" label="Units" v-model="itemdata.Units" v-bind:disabled="readonly"></v-select>
+                            <v-text-field type="date" label="Stock Checked" v-model="itemdata.StockCheckTime" v-bind:readonly="readonly" max="todays_date"></v-text-field>
+                        </td>
+                        <td>
+                            <v-text-field type="number" v-model="itemdata.Quantity" label="Number of Containers" v-bind:readonly="readonly"></v-text-field>
                         </td>
                     </tr>
                 </table>
@@ -208,6 +222,7 @@ const mymodule = {
     props: {
         groups: {},
         owners: {},
+        units: [],
         width: {
             type: Number,
             default: 1100
@@ -232,6 +247,7 @@ const mymodule = {
             modified: false,
 
             use_new_hazard_flags: false,
+            todays_date: moment().format('YYYY-MM-DD'),
 
             // new hazard flags
             hazard_tables: undefined,
@@ -251,7 +267,7 @@ const mymodule = {
             ],
 
             // dropdown list values
-            units: [
+            units2: [
                 { value: "cm3", text: "Cubic centimeters (cm^3)" },
                 { value: "m3", text: "Cubic meters (m^3)" },
                 { value: "g", text: "Gram (g)" },

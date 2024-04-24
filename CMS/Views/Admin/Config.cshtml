@@ -181,7 +181,7 @@
 
             mounted: function () {
                 let self = this;
-                let names = ["University", "College", "Buiilding", "Room", "Cabinet", "Shelf", "Refrigerator", "Freezer"];
+                let names = ["University", "College", "Building", "Room", "Cabinet", "Shelf", "Refrigerator", "Freezer"];
                 let name_array = [];
                 names.forEach(function (x) {
                     self.add_type_name(x);
@@ -497,6 +497,7 @@
                                 if (name_and_children.length > 1) child_list = name_and_children[1].trim();
                                 let current_type = undefined;
                                 if (location_name.length > 0) {
+                                    console.log(location_name.toLowerCase(), root_location_type.Name.toLowerCase());
                                     if (location_name.toLowerCase() == root_location_type.Name.toLowerCase()) {
                                         current_type = root_location_type;
                                         have_root_def = true;
@@ -530,7 +531,7 @@
                         this.build_tree(new_location_types);
                     }
                     else {
-                        this.notify("Import Location Types", 'You must include "Root: ...." in your location definitions');
+                        this.notify("Import Location Types", 'You must include ' + root_location_type.Name + ': ...." in your location definitions');
                     }
                 },
             }

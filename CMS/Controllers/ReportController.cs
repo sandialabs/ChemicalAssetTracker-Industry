@@ -410,11 +410,13 @@ namespace CMS.Controllers
             result.AddColumn("LocationID", EQueryDataType.INT, 0);
             result.AddColumn("Chemical", EQueryDataType.STRING, 0);
             result.AddColumn("Location", EQueryDataType.STRING, 0);
+            result.AddColumn("ContainerName", EQueryDataType.STRING, 0);
             result.AddColumn("Barcode", EQueryDataType.STRING, 0);
             result.AddColumn("CASNumber", EQueryDataType.STRING, 0);
             result.AddColumn("Owner", EQueryDataType.STRING, 0);
             result.AddColumn("ContainerSize", EQueryDataType.FLOAT, 0);
             result.AddColumn("Remaining", EQueryDataType.FLOAT, 0);
+            result.AddColumn("ContainerUnitID", EQueryDataType.INT, 0);
 
             var query = db.InventoryItems.Include(x => x.Location).Include(x => x.Owner).OrderBy(x => x.ChemicalName);
             var rows = query.ToList();
@@ -434,11 +436,13 @@ namespace CMS.Controllers
                     new ColumnData(item.InventoryID),
                     new ColumnData(item.ChemicalName ?? ""),
                     new ColumnData(item.FullLocation),
+                    new ColumnData(item.ContainerName),
                     new ColumnData(item.Barcode),
                     new ColumnData(item.CASNumber),
                     new ColumnData(item.Owner?.Name ?? ""),
                     new ColumnData(item.ContainerSize),
-                    new ColumnData(item.RemainingQuantity)
+                    new ColumnData(item.RemainingQuantity),
+                    new ColumnData(item.ContainerUnitID)
                 );
             }
             // TODO: add QueryResult.GroupBy(int column_id);

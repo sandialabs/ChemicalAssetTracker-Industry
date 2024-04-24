@@ -13,6 +13,7 @@ using CMS.Services;
 using Newtonsoft.Json.Serialization;
 using Microsoft.AspNetCore.StaticFiles;
 using DataModel;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 namespace CMS
 {
@@ -81,6 +82,16 @@ namespace CMS
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(user_logout_time_minutes);
             });
 
+            services.Configure<KestrelServerOptions>(options =>
+            {
+                options.AllowSynchronousIO = true;
+            });
+
+            // If using IIS:
+            services.Configure<IISServerOptions>(options =>
+            {
+                options.AllowSynchronousIO = true;
+            });
             services.Configure<IISOptions>(options => options.ForwardClientCertificate = false);
             // This is a service that can be injected to support user account management
             services.AddScoped<IAccountHelper, AccountHelper>();
@@ -95,8 +106,12 @@ namespace CMS
                     options.HttpsPort = Program.ListenPort;
                 });
             }
-            services.AddMvc()
-                .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
+            //services
+            //    .AddMvc()
+            //    .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
+
+            services.AddControllersWithViews().AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
+
 
             services.AddAntiforgery();
         }
@@ -106,7 +121,7 @@ namespace CMS
         {
             if (env.IsDevelopment())
             {
-                app.UseBrowserLink();
+                //app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
             }
@@ -129,14 +144,20 @@ namespace CMS
             }
             app.UseStaticFiles(new StaticFileOptions() { ContentTypeProvider = myProvider });
             app.UseStaticFiles();
+            app.UseRouting();
 
             app.UseAuthentication();
+            app.UseAuthorization(); // This needs to be between app.UseRouting(); and app.UseEndpoints();
 
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+            //app.UseMvc(routes =>
+            //{
+            //    routes.MapRoute(
+            //        name: "default",
+            //        template: "{controller=Home}/{action=Index}/{id?}");
+            //});
+
+            app.UseEndpoints(endpoints => {
+                endpoints.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
             });
 
             try
@@ -146,7 +167,7 @@ namespace CMS
             catch (Exception ex)
             {
                 while (ex.InnerException != null) ex = ex.InnerException;
-                Console.WriteLine("Unable to open CMSUsers database: " + ex.Message);
+                Console.WriteLine("Unable to open cmsusers database: " + ex.Message);
             }
             using (var db = new CMSDB())
             {

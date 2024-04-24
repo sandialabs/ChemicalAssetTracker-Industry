@@ -13,7 +13,7 @@
                     </v-layout>
                     <v-layout class="mt-4">
                         <v-flex>
-                            <v-text-field hide-details label="Barcode" class="mr-3" outlined dense v-model="selected_barcode"></v-text-field>
+                            <v-text-field hide-details label="Item ID" class="mr-3" outlined dense v-model="selected_barcode"></v-text-field>
                         </v-flex>
                         <v-flex>
                             <v-text-field hide-details label="CAS #" class="mr-3" outlined dense v-model="selected_casnumber"></v-text-field>

@@ -69,21 +69,23 @@ const mymodule = {
             type: Array,
             default: function() {
                 return [
-                    { name: "barcode", label: "Barcode", value: true, enabled: true },
-                    { name: "casnumber", label: "CAS #", value: true, enabled: true },
-                    { name: "chemical", label: "Chemical Name", value: true, enabled: true },
+                    { name: "barcode", label: "Item ID", value: true, enabled: true },
                     { name: "location", label: "Location", value: true, enabled: true },
-                    { name: "datein", label: "Date In", value: true, enabled: true },
-                    { name: "expiry", label: "Expiration", value: true, enabled: true },
+                    { name: "chemical", label: "Chemical Name", value: true, enabled: true },
+                    { name: "casnumber", label: "CAS #", value: true, enabled: true },
+                    { name: "datein", label: "Date In", value: false, enabled: false },
+                    { name: "expiry", label: "Expiration", value: false, enabled: false },
                     { name: "owner", label: "Owner", value: true, enabled: true },
-                    { name: "group", label: "Storage Group", value: true, enabled: true },
+                    { name: "group", label: "Storage Group", value: false, enabled: false },
+                    { name: "quantity", label: "Number of Containers", value: true, enabled: true },
                     { name: "size", label: "Size", value: true, enabled: true },
                     { name: "remaining", label: "Remaining Qty", value: true, enabled: true },
+                    { name: "verified", label: "Stock Checked", value: true, enabled: true },
                     { name: "state", label: "State", value: true, enabled: true },
                     { name: "sds", label: "SDS", value: true, enabled: true },
                     { name: "hazards", label: "Hazards", value: true, enabled: true },
-                    { name: "units", label: "Units", value: true, enabled: true },
                     { name: "notes", label: "Notes", value: true, enabled: true },
+                    { name: "refillable", label: "Refillable", value: true, enabled: true },
                 ];
             }
         }

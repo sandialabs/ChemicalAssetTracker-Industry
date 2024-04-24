@@ -11,7 +11,7 @@
             <span class="subtitle-1" v-if="inventory.length == 0">No items found</span>
             <v-btn icon style="margin-top: 0.4rem;" v-if="have_next_page()" v-on:click="on_next_page()"><v-icon title="Next Page">fast_forward</v-icon></v-btn>
             <v-spacer></v-spacer>
-            <v-btn v-if="!readonly" class="red--text font-weight-bold" flat icon v-on:click="on_add()"><v-icon large title="Add New">control_point</v-icon></v-btn>
+            <v-btn v-if="!readonly" class="red--text font-weight-bold" flat icon v-on:click="on_add()"><v-icon large title="Add New">control_point</v-icon> New</v-btn>
         </div>
         <searchsettings ref="searchsettings"></searchsettings>
     </v-layout>

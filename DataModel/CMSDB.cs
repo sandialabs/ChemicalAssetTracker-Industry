@@ -48,6 +48,8 @@ namespace DataModel
         private DbSet<StorageLocation> StorageLocations { get; set; }
         public DbSet<LocationLevelName> LocationLevelNames { get; set; }
         public DbSet<StorageGroup> StorageGroups { get; set; }
+        public DbSet<ContainerUnit> ContainerUnits { get; set; }
+        public DbSet<Refill> Refills { get; set; }
         public DbSet<Setting> Settings { get; set; }
         public DbSet<RemovedItem> RemovedItems { get; set; }
         public DbSet<InventoryStatus> InventoryStatusNames { get; set; }
@@ -233,6 +235,24 @@ namespace DataModel
                 Console.WriteLine("Creating the GetLocationName function");
                 Database.ExecuteSqlCommand(s_getlocationpath_func);
             }
+            if (ContainerUnits.CountAsync().Result == 0)
+            {
+                Console.WriteLine("Initializing the ContainerUnits table");
+                ContainerUnits.Add(new ContainerUnit(1, "Cubic centimeters (cm^3)", "cm3"));
+                ContainerUnits.Add(new ContainerUnit(2, "Cubic meters (m^3)", "m3"));
+                ContainerUnits.Add(new ContainerUnit(3, "Gram (g)", "g"));
+                ContainerUnits.Add(new ContainerUnit(4, "Kilogram (kg)", "kg"));
+                ContainerUnits.Add(new ContainerUnit(5, "Liter (L)", "L"));
+                ContainerUnits.Add(new ContainerUnit(6, "Milligram (mg)", "mg"));
+                ContainerUnits.Add(new ContainerUnit(7, "Milliliter (mL)", "mL"));
+                ContainerUnits.Add(new ContainerUnit(8, "Cubic feet (ft^3)", "ft3"));
+                ContainerUnits.Add(new ContainerUnit(9, "Pounds (lb)", "lb"));
+                ContainerUnits.Add(new ContainerUnit(10, "Gallons (gal)", "gal"));
+                ContainerUnits.Add(new ContainerUnit(11, "Cubic Yards (y^3)", "y3"));
+                ContainerUnits.Add(new ContainerUnit(12, "Tons (Imperial) (tn)", "tn"));
+                ContainerUnits.Add(new ContainerUnit(13, "Metric Tons (mt)", "mt"));
+                ContainerUnits.Add(new ContainerUnit(14, "Barrels (bbl)", "bbl"));
+            }
 
 
             SaveChanges();
@@ -297,6 +317,7 @@ namespace DataModel
                     {
                         if (callback(reader) == false) break;
                     }
+                    reader.Close();
                 }
             }
         }
@@ -361,6 +382,10 @@ namespace DataModel
             // putting an index on a large text column causes mysql error 
             //modelBuilder.Entity<GHSData>().HasIndex(x => x.ChemicalName);
             modelBuilder.Entity<Attachment>().HasIndex(x => x.Login);
+            modelBuilder.Entity<InventoryAudit>().HasOne("DataModel.InventoryItem", "Item")
+                        .WithMany()
+                        .HasForeignKey("InventoryID")
+                        .OnDelete(DeleteBehavior.Cascade);
             base.OnModelCreating(modelBuilder);
         }
 
@@ -388,9 +413,39 @@ namespace DataModel
             return result;
         }
 
+        public IEnumerable<InventoryItem> GetItemsByQueryAsync(int root_id = 0, string barcode = null, string chemical_name = null, string container_name = null)
+        {
+            var inventoryItems = InventoryItems.AsQueryable();
+            Console.WriteLine("*** 2nd Root ID: " + root_id + "; Chemical Name: " + chemical_name + "; Container: " + container_name);
+
+            if (root_id > 0)
+            {
+                inventoryItems = inventoryItems.Where(item => item.LocationID == root_id);
+            }
+
+            if (!string.IsNullOrEmpty(barcode))
+            {
+                inventoryItems = inventoryItems.Where(item => item.Barcode.Contains(barcode));
+            }
+
+            if (!string.IsNullOrEmpty(chemical_name))
+            {
+                inventoryItems = inventoryItems.Where(item => item.ChemicalName.Contains(chemical_name));
+            }
+
+            if (!string.IsNullOrEmpty(container_name))
+            {
+                inventoryItems = inventoryItems.Where(item => item.ContainerName.Contains(container_name));
+            }
+
+            Console.WriteLine("*** Items Found: " + inventoryItems.ToList());
+
+            return inventoryItems.ToList();
+        }
+
         public InventoryItem GetItem(int item_id)
         {
-            InventoryItem result = InventoryItems.Include(x => x.Group).Include(x => x.Owner).FirstOrDefault(x => x.InventoryID == item_id);
+            InventoryItem result = InventoryItems.Include(x => x.Group).Include(x => x.Owner).Include(x => x.ContainerUnit).FirstOrDefault(x => x.InventoryID == item_id);
             if (result != null) result.InitializeItemFlags(this);
             return result;
         }
@@ -408,6 +463,7 @@ namespace DataModel
             List<InventoryItem> result = InventoryItems.Include(x => x.Location)
                 .Include(x => x.Group)
                 .Include(x => x.Owner)
+                .Include(x => x.ContainerUnit)
                 .OrderBy(x => x.Barcode)
                 .Take(MaxInventoryRows)
                 .ToList();
@@ -424,6 +480,7 @@ namespace DataModel
             result = InventoryItems.Include(x => x.Location)
                 .Include(x => x.Group)
                 .Include(x => x.Owner)
+                .Include(x => x.ContainerUnit)
                 .Where(x => x.LocationID == location_id)
                 .OrderBy(x => x.Barcode)
                 .Take(maxrows)
@@ -464,6 +521,7 @@ namespace DataModel
             var query = InventoryItems.Include(x => x.Location)
                 .Include(x => x.Group)
                 .Include(x => x.Owner)
+                .Include(x => x.ContainerUnit)
                 .Where(x => x.LocationID > 0);
 
             if (string.IsNullOrEmpty(settings.BarCode) == false)
@@ -520,6 +578,7 @@ namespace DataModel
             var query = InventoryItems
                 .Include(x => x.Group)
                 .Include(x => x.Owner)
+                .Include(x => x.ContainerUnit)
                 .Where(x => valid_location_ids.Contains(x.LocationID));
 
             if (string.IsNullOrEmpty(settings.BarCode) == false)
@@ -1280,6 +1339,14 @@ namespace DataModel
         {
             Locations.InitializeLocationNames(loc);
         }
+
+
+        public Refill RecordRefill(Refill refill_item, bool save_changes)
+        {
+            Refills.Add(refill_item);
+            return refill_item;
+        }
+
 
         public static string SitePart(string location_name, int ix)
         {

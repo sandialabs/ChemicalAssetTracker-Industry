@@ -25,6 +25,7 @@ module.exports = {
         barcode: "./src/vue_components/barcode.vue",
         pictogramdialog: "./src/vue_components/pictogramdialog.vue",
         cocdialog: "./src/vue_components/cocdialog.vue",
+        containerrefill: "./src/vue_components/containerrefill.vue",
     },
     externals: {
         jquery: "jQuery",

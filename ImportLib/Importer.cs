@@ -4,6 +4,8 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using Common;
+using DocumentFormat.OpenXml.VariantTypes;
+using DocumentFormat.OpenXml.Drawing;
 
 namespace ImportLib
 {
@@ -62,12 +64,12 @@ namespace ImportLib
         {
             DatabaseValidationResult result = new DatabaseValidationResult();
 
-            if (!sqlite_file.ToLower().EndsWith(".db"))
-            {
-                result.AddMessage("The import file must be a CMS database file (.db)");
-                result.Success = false;
-                return result;
-            }
+            //if (!sqlite_file.ToLower().EndsWith(".db"))
+            //{
+            //    result.AddMessage("The import file must be a CMS database file (.db)");
+            //    result.Success = false;
+            //    return result;
+            //}
 
             TaskTimer t1 = new TaskTimer("timer");
             Log($"Validating import file {sqlite_file}");
@@ -252,7 +254,6 @@ namespace ImportLib
             {
                 int items_imported = ImportNewItems(excelfile, result, db);
                 result.ItemsImported = items_imported;
-                Console.WriteLine("Done");
                 db.AddLogEntry(login, "import", $"Database import complete in  {t1.Format()}", LogEntry.INFO_MESSAGE, true);
                 result.AddMessage($"Database import complete in  {t1.Format()}");
                 db.RefreshLocations();
@@ -341,6 +342,7 @@ namespace ImportLib
         public bool ImportNewItem(ExcelImportFile excelfile, CMSDB db, ExcelRow row, DatabaseValidationResult result)
         {
             string barcode = excelfile.GetRowValue(row, "Barcode");
+            
             DataModel.InventoryItem existing = db.GetItemByBarcode(barcode);
             if (existing != null)
             {
@@ -357,11 +359,14 @@ namespace ImportLib
             if (!String.IsNullOrEmpty(group)) new_group = db.StorageGroups.FirstOrDefault(x => x.Name == group);
 
             string locstr = excelfile.GetRowValue(row, "Location");
+            
             if (String.IsNullOrEmpty(locstr))
             {
                 locstr = "Import";
             }
-            int new_location_id = m_new_location_string_map[locstr];  
+            int new_location_id = m_new_location_string_map[locstr];
+
+
             DataModel.StorageLocation itemloc = db.ReadLocation(new_location_id);
 
             InventoryItemFlags flags = new InventoryItemFlags();
@@ -381,6 +386,10 @@ namespace ImportLib
 
             string casnumber = excelfile.GetRowValue(row, "CAS #");
             string chemicalname = excelfile.GetRowValue(row, "Chemical Name");
+            int refillValue = Convert.ToInt32(excelfile.GetRowDoubleValue(row, "Refillable"));
+            bool refillable = Convert.ToBoolean(refillValue);
+            int quantity = 0;
+            Int32.TryParse(excelfile.GetRowValue(row, "Quantity"), out quantity);
 
             DataModel.InventoryItem newitem = new DataModel.InventoryItem()
             {
@@ -394,16 +403,19 @@ namespace ImportLib
                 Group = new_group,
                 ContainerSize = excelfile.GetRowDoubleValue(row, "Container Size"),
                 RemainingQuantity = excelfile.GetRowDoubleValue(row, "Remaining Quantity"),
-                Units = excelfile.GetRowValue(row, "Units"),
+                ContainerUnitID = Convert.ToInt32(excelfile.GetRowDoubleValue(row, "ContainerUnitID")),
                 State = excelfile.GetRowValue(row, "State"),
                 Flags = flags.DatabaseString(),
+                Refillable = refillable,
+                Quantity = quantity,
                 // PH: InventoryStatus will be removed in new audit model
                 //InventoryStatusID = (olditem.InventoryStatus == 0 ? (int?)null : olditem.InventoryStatus),
                 Notes = excelfile.GetRowValue(row, "Notes")
                 // PH: don't carry over stock check information
                 // StockCheckLocation = olditem.StockCheckLocation
             };
-            Console.WriteLine($"    {barcode} {chemicalname}");
+
+
             db.InventoryItems.Add(newitem);
             db.AddLogEntry(m_login, "import", $"Added InventoryItem {barcode} at {itemloc.Path}", LogEntry.INFO_MESSAGE, false);
             return true;
@@ -450,6 +462,7 @@ namespace ImportLib
             {
                 int location_id = ImportNewLocation(locstr, db, result);
                 count += 1;
+
                 m_new_location_string_map.Add(locstr, location_id);
                 count += 1;
                 result.LocationsImported = count;
@@ -523,8 +536,12 @@ namespace ImportLib
                 LocationType loctype = m_location_type_name_map[child_loc_type];
                 db.AddLogEntry(m_login, "import", $"Added location {partial_location}", LogEntry.INFO_MESSAGE, false);
                 // db.AddLocation ensures that existing entries are not duplicated
-                var existing = db.Locations.FirstOrDefault(x => x.ParentID == parent.LocationID && x.Name == part);
-                if (existing != null) result.AddMessage($"        Location {part} already exists under {parent.Name}.");
+                DataModel.StorageLocation existing = db.Locations.FirstOrDefault(x => x.ParentID == parent.LocationID && x.Name == part);
+                
+                if (existing != null) {
+                    parent = existing;
+                    result.AddMessage($"        Location {part} already exists under {parent.Name}.");
+                }
                 else
                 {
                     msg = $"Added Location {part} under {parent.Name}";
