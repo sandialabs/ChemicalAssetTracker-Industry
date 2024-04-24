@@ -4,6 +4,8 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using Common;
+using DocumentFormat.OpenXml.VariantTypes;
+using DocumentFormat.OpenXml.Drawing;
 
 namespace ImportLib
 {
@@ -384,8 +386,10 @@ namespace ImportLib
 
             string casnumber = excelfile.GetRowValue(row, "CAS #");
             string chemicalname = excelfile.GetRowValue(row, "Chemical Name");
-            bool refillable = false;
-            bool.TryParse(excelfile.GetRowValue(row, "Refillable"), out refillable);
+            int refillValue = Convert.ToInt32(excelfile.GetRowDoubleValue(row, "Refillable"));
+            bool refillable = Convert.ToBoolean(refillValue);
+            Console.WriteLine("Refillable: " + refillable + " : " + refillable.GetType());
+            Console.WriteLine("ContainerUnitID: " + excelfile.GetRowValue(row, "ContainerUnitID"));
             int quantity = 0;
             Int32.TryParse(excelfile.GetRowValue(row, "Quantity"), out quantity);
 
@@ -401,7 +405,7 @@ namespace ImportLib
                 Group = new_group,
                 ContainerSize = excelfile.GetRowDoubleValue(row, "Container Size"),
                 RemainingQuantity = excelfile.GetRowDoubleValue(row, "Remaining Quantity"),
-                Units = excelfile.GetRowValue(row, "Units"),
+                ContainerUnitID = Convert.ToInt32(excelfile.GetRowDoubleValue(row, "ContainerUnitID")),
                 State = excelfile.GetRowValue(row, "State"),
                 Flags = flags.DatabaseString(),
                 Refillable = refillable,
@@ -412,6 +416,8 @@ namespace ImportLib
                 // PH: don't carry over stock check information
                 // StockCheckLocation = olditem.StockCheckLocation
             };
+
+            Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(newitem));
 
 
             db.InventoryItems.Add(newitem);
