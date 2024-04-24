@@ -283,7 +283,6 @@ namespace ImportLib
 
             foreach (ExcelRow row in inventory_rows)
             {
-                Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(row).ToString());
                 if (ImportNewItem(excel, db, row, result)) items_imported += 1;
             }
             db.SaveChanges();
@@ -342,6 +341,7 @@ namespace ImportLib
         public bool ImportNewItem(ExcelImportFile excelfile, CMSDB db, ExcelRow row, DatabaseValidationResult result)
         {
             string barcode = excelfile.GetRowValue(row, "Barcode");
+            Console.WriteLine("Barcode: " + barcode);
             DataModel.InventoryItem existing = db.GetItemByBarcode(barcode);
             if (existing != null)
             {
@@ -358,11 +358,16 @@ namespace ImportLib
             if (!String.IsNullOrEmpty(group)) new_group = db.StorageGroups.FirstOrDefault(x => x.Name == group);
 
             string locstr = excelfile.GetRowValue(row, "Location");
+            Console.WriteLine("Location: " + locstr);
             if (String.IsNullOrEmpty(locstr))
             {
                 locstr = "Import";
             }
-            int new_location_id = m_new_location_string_map[locstr];  
+            int new_location_id = m_new_location_string_map[locstr];
+
+            Console.WriteLine("Location Dictionary: ");
+            Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(m_new_location_string_map).ToString());
+
             DataModel.StorageLocation itemloc = db.ReadLocation(new_location_id);
 
             InventoryItemFlags flags = new InventoryItemFlags();
@@ -410,7 +415,9 @@ namespace ImportLib
                 // PH: don't carry over stock check information
                 // StockCheckLocation = olditem.StockCheckLocation
             };
-            Console.WriteLine($"    {barcode} {chemicalname}");
+
+            Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(newitem).ToString());
+
             db.InventoryItems.Add(newitem);
             db.AddLogEntry(m_login, "import", $"Added InventoryItem {barcode} at {itemloc.Path}", LogEntry.INFO_MESSAGE, false);
             return true;
@@ -421,6 +428,7 @@ namespace ImportLib
             int count = 0;
             Log("Importing Locations");
             result.AddMessage("Importing Locations");
+            Console.WriteLine("Import Locations C");
             DataModel.StorageLocation root = m_root_location;
             string root_location_path = db.Locations.GetFullLocationName(root.LocationID, true);
             foreach (StorageLocation loc in olddb.FetchStorageLocations())
@@ -453,10 +461,14 @@ namespace ImportLib
             int count = 0;
             Log("Importing Locations");
             result.AddMessage("Importing Locations");
+            Console.WriteLine("Import Locations A");
             foreach (string locstr in location_strings)
             {
                 int location_id = ImportNewLocation(locstr, db, result);
                 count += 1;
+
+                Console.WriteLine(locstr + ": " + location_id);
+
                 m_new_location_string_map.Add(locstr, location_id);
                 count += 1;
                 result.LocationsImported = count;
@@ -474,6 +486,7 @@ namespace ImportLib
 
         private void AddNolocationLocation(CMSDB db, DatabaseValidationResult result)
         {
+            Console.WriteLine("Import Locations B");
             string msg = $"Added Location \"Import\" under {m_root_location.Path} for imported items with no location.";
             LocationType parent_loc_type = m_location_type_id_map[m_root_location.LocationTypeID];
             string child_location_typename = parent_loc_type.ValidChildList[0];
@@ -530,8 +543,12 @@ namespace ImportLib
                 LocationType loctype = m_location_type_name_map[child_loc_type];
                 db.AddLogEntry(m_login, "import", $"Added location {partial_location}", LogEntry.INFO_MESSAGE, false);
                 // db.AddLocation ensures that existing entries are not duplicated
-                var existing = db.Locations.FirstOrDefault(x => x.ParentID == parent.LocationID && x.Name == part);
-                if (existing != null) result.AddMessage($"        Location {part} already exists under {parent.Name}.");
+                DataModel.StorageLocation existing = db.Locations.FirstOrDefault(x => x.ParentID == parent.LocationID && x.Name == part);
+                Console.WriteLine("New location ID: " + existing.LocationID);
+                if (existing != null) {
+                    parent = existing;
+                    result.AddMessage($"        Location {part} already exists under {parent.Name}.");
+                }
                 else
                 {
                     msg = $"Added Location {part} under {parent.Name}";
