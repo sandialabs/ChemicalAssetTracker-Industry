@@ -388,8 +388,6 @@ namespace ImportLib
             string chemicalname = excelfile.GetRowValue(row, "Chemical Name");
             int refillValue = Convert.ToInt32(excelfile.GetRowDoubleValue(row, "Refillable"));
             bool refillable = Convert.ToBoolean(refillValue);
-            Console.WriteLine("Refillable: " + refillable + " : " + refillable.GetType());
-            Console.WriteLine("ContainerUnitID: " + excelfile.GetRowValue(row, "ContainerUnitID"));
             int quantity = 0;
             Int32.TryParse(excelfile.GetRowValue(row, "Quantity"), out quantity);
 
@@ -416,8 +414,6 @@ namespace ImportLib
                 // PH: don't carry over stock check information
                 // StockCheckLocation = olditem.StockCheckLocation
             };
-
-            Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(newitem));
 
 
             db.InventoryItems.Add(newitem);
