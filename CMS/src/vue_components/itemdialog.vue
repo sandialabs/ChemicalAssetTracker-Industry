@@ -65,7 +65,7 @@
                                     <v-select :items="units" item-text="Name" item-value="ContainerUnitID" label="Units" v-model="itemdata.ContainerUnitID" v-bind:disabled="readonly" @change="on_modified"></v-select>
                                 </td>
                                 <td>
-                                    <v-switch v-model="itemdata.Refillable" label="Refillable" v-bind:readonly="readonly" @input="on_modified" color="blue"></v-switch>
+                                    <v-switch v-model="itemdata.Refillable" label="Refillable" v-bind:readonly="readonly" @input="on_modified" color="blue" @change="changeRefillable($event)"></v-switch>
                                 </td>
                             </tr>
 
@@ -77,7 +77,7 @@
                                     <v-text-field type="date" label="Stock Checked" v-model="itemdata.StockCheckTime" v-bind:readonly="readonly" max="todays_date"></v-text-field>
                                 </td>
                                 <td>
-                                    <v-text-field type="number"  v-model="itemdata.Quantity" label="Number of Containers" v-bind:readonly="readonly"></v-text-field>
+                                    <v-text-field type="number"  v-model="itemdata.Quantity" label="Number of Containers" v-bind:readonly="readonly" :disabled="itemdata.Refillable"></v-text-field>
                                 </td>
                             </tr>
                         </table>
@@ -286,6 +286,7 @@ const mymodule = {
             modified: false,
             checkmark_message: "",
             accept_button_text: "Update",
+            originalQuantity: 0,
 
             use_new_hazard_flags: false,
             todays_date: moment().format('YYYY-MM-DD'),
@@ -456,6 +457,8 @@ const mymodule = {
                     if (flag) if (self.debug) console.log("    " + flag.Label + " (" + flag.FlagName + ") = " + flag.Value);
                 });
             });
+
+            this.originalQuantity = itemdata.Quantity;
         },
 
         //--------------------------------------------------------------
@@ -513,10 +516,21 @@ const mymodule = {
             })
         },
 
+        changeRefillable($event) {
+            if (this.itemdata.Refillable) {
+                this.itemdata.Quantity = 1;
+            }
+            else {
+                this.itemdata.Quantity = this.originalQuantity;
+            }
+            
+            console.log("Refillable:", this.itemdata.Refillable);
+        },
+
         on_accept: function() {
             let itemdata = this.itemdata;
             let missing = [];
-            if (is_empty(itemdata.Barcode)) missing.push("Barcode");
+            if (is_empty(itemdata.Barcode)) missing.push("Item ID");
             if (is_empty(itemdata.ChemicalName)) missing.push("ChemicalName");
             if (is_empty(itemdata.CASNumber)) missing.push("CAS #");
             if (!itemdata.LocationID) missing.push("Location");

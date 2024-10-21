@@ -1,7 +1,7 @@
 ﻿#define INCLUDE_MYSQL
 
 #if INCLUDE_MYSQL
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;

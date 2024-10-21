@@ -17,7 +17,7 @@
                         <v-text-field type="date" label="Date Expires" v-model="refillRecord.DateExpires"></v-text-field>
                         <v-text-field typeof="number" v-model="refillRecord.UnitsReceived" required :suffix="measurementUnit" >
                             <template #label>
-                                <span class="red--text"><strong>* </strong></span>Ammount Added
+                                <span class="red--text"><strong>* </strong></span>Amount Added
                             </template>
                         </v-text-field>
                         <!--<v-text-field label="ContainerUnitID" v-model="refillRecord.ContainerUnitID"></v-text-field>-->

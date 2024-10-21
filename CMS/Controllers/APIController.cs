@@ -9,10 +9,10 @@ using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using CMS.Services;
 using System.Data.SqlClient;
-using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
+using System.Diagnostics;
 
 namespace CMS.Controllers
 {
@@ -192,6 +192,7 @@ namespace CMS.Controllers
                     UserInfo user_info = m_account_helper.GetUser(username);
                     List<InventoryItem> inventory;
                     inventory = db.SearchInventoryNoauth(user_info.HomeLocationID, settings);
+    Debug.WriteLine(JsonConvert.SerializeObject(inventory).ToString());
                     LocationSubtree subtree = db.GetCachedLocations(username, settings.RootID);
                     string message = "Success";
                     if (inventory.Count == CMSDB.MaxInventoryRows) message = $"The total number of inventory items returned was limited to {CMSDB.MaxInventoryRows}";
@@ -577,8 +578,8 @@ namespace CMS.Controllers
                 {
                     if (stockcheckdata.OpCode == "new")
                     {
-                        db.Database.ExecuteSqlCommand("update InventoryItems set StockCheckPreviousLocation = null, StockCheckTime = null, StockCheckUser = null where StockCheckPreviousLocation is not null");
-                        db.Database.ExecuteSqlCommand("delete from Orphans");
+                        db.Database.ExecuteSqlRaw("update InventoryItems set StockCheckPreviousLocation = null, StockCheckTime = null, StockCheckUser = null where StockCheckPreviousLocation is not null");
+                        db.Database.ExecuteSqlRaw("delete from Orphans");
                         stockcheckdata.ConfirmedInventory = new List<InventoryItem>();
                         stockcheckdata.UnconfirmedInventory = new List<InventoryItem>();
 
@@ -1135,14 +1136,16 @@ namespace CMS.Controllers
             try
             {
                 string msg = "SUCCESS";
+                Debug.WriteLine("Refill Called");
                 using (CMSDB db = new CMSDB())
                 {
                     if (refill_item.RefillID == 0)
                     {
-                        db.RecordRefill(refill_item, true);
+                        Refill new_record = db.RecordRefill(refill_item, true);
                         msg = $"Refill successfully added to the database.";
                         //db.LogInfo(User.Identity.Name, "update", $"Refill \"{db.GetLocationName(location.LocationID)}\" ({location.LocationID}) added", false);
-                        db.LogInfo(User.Identity.Name, "update", $"Refill \"{refill_item.InventoryID}\" ({refill_item.RefillID}) added", false);
+                        Debug.WriteLine("~~~   Refill Item: " + refill_item.InventoryID);
+                        db.LogInfo(User.Identity.Name, "update", $"Refill asset \"{refill_item.InventoryID}\" (Refill ID:{new_record.RefillID}) with {refill_item.UnitsReceived} units", false);
                     }
                     else
                     {

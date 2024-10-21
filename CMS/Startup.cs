@@ -32,8 +32,9 @@ namespace CMS
         public void ConfigureServices(IServiceCollection services)
         {
             CMSDB.Configuration = Configuration;
+            string? connectionString = Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
+                options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
             //services.AddIdentity<ApplicationUser, IdentityRole>()
             //    .AddEntityFrameworkStores<ApplicationDbContext>()

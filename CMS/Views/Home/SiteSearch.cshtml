@@ -77,6 +77,7 @@
                                     <tr><td>Date In</td><td>{{item.DateIn | date}}</td></tr>
                                     <tr><td>Expiration Date</td><td>{{item.ExpirationDate | date}}</td></tr>
                                     <tr><td>Quantity</td><td>{{qty(item)}}</td></tr>
+                                    <tr><td>Units</td><td>{{containerUnit(item)}} | {{item.ContainerUnit.UnitAbbreviation}}</td></tr>
                                 </tbody>
                             </table>
                         </v-card-text>
@@ -145,8 +146,8 @@
                         { header: "Owner", field: "Owner.Name", width: 150, align: 'center', filtered: true, enabled: true },
                         { header: "Storage Group", field: "Group.Name", width: 150, align: 'center', filtered: true, enabled: false },
                         { header: "Size", field: "ContainerSize", width: 70, align: 'center', filtered: true, enabled: false },
-                        { header: "Units", field: "Units", width: 70, align: 'center', filtered: true, enabled: false },
-                        { header: "Rem", field: "RemainingQuantity", width: 70, align: 'center', filtered: true, enabled: false },
+                        { header: "Remaining", field: "RemainingQuantity", width: 70, align: 'center', filtered: true, enabled: true },
+                        { header: "Units", field: "ContainerUnit.UnitAbbreviation", width: 70, align: 'center', filtered: true, enabled: true },
                         { header: "State", field: "State", width: 70, align: 'center', filtered: true, enabled: false },
                         { header: "Notes", field: "Notes", width: 300, align: 'left', filtered: true, enabled: false },
                     ],
@@ -280,7 +281,14 @@
                 },
 
                 qty: function (item) {
-                    if (item.RemainingQuantity && item.Units) return item.RemainingQuantity + ' ' + item.Units;
+                    if (item.RemainingQuantity && item.Units) return item.RemainingQuantity + ' ' + item.ContainerUnit.UnitAbbreviation;
+                    else return "";
+                },
+
+                containerUnit: function (item) {
+                    console.log(JSON.stringify(item));
+                    console.log("Abbreviation:", item.ContainerUnit.UnitAbbreviation);
+                    if (item.ContainerUnit && item.ContainerUnit.UnitAbbreviation) return item.ContainerUnit.UnitAbbreviation;
                     else return "";
                 },
 

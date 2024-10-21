@@ -1,4 +1,5 @@
 ﻿using Common;
+using DocumentFormat.OpenXml.Bibliography;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -7,6 +8,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -233,7 +235,7 @@ namespace DataModel
             if (!DbContextHelper.FunctionExists(this, "cms", "GetLocationPath"))
             {
                 Console.WriteLine("Creating the GetLocationName function");
-                Database.ExecuteSqlCommand(s_getlocationpath_func);
+                Database.ExecuteSqlRaw(s_getlocationpath_func);
             }
             if (ContainerUnits.CountAsync().Result == 0)
             {
@@ -358,7 +360,7 @@ namespace DataModel
                 //string safe_string = connection_string.Replace("password=cms", "password=*********");
                 //string[] parts = safe_string.Split(";");
                 //banner("Configuring connection string: ", "    " + parts[0], "    " + parts[1], "    " + parts[2], "    " + parts[3]);
-                options_builder.UseMySql(connection_string);
+                options_builder.UseMySql(connection_string, ServerVersion.AutoDetect(connection_string));
                 s_connection_string = connection_string;
                 var settings = GetConnectionSettings();
                 if (settings.ContainsKey("server")) s_database_hostname = settings["server"];
@@ -600,6 +602,15 @@ namespace DataModel
                 .Take(settings.ItemsPerPage)
                 .ToList();
             result.ForEach(x => x.InitializeItemFlags(this));
+
+            List<InventoryItem> test = InventoryItems
+                .Include(x => x.Group)
+                .Include(x => x.Owner)
+                .Include(x => x.ContainerUnit)
+                .Where(x => valid_location_ids.Contains(x.LocationID)).ToList();
+            Debug.WriteLine("~~~  TESTING  ~~~");
+            Debug.WriteLine(JsonConvert.SerializeObject(test).ToString());
+
             return result;
         }
 
@@ -874,7 +885,7 @@ namespace DataModel
             List<string> locations_to_update = subtree.Locations.Select(x => Convert.ToString(x.LocationID)).ToList();
             string loclist = String.Join(", ", locations_to_update);
             string sql = $"update StorageLocations set Path = GetLocationPath(LocationID) where LocationID in ({loclist})";
-            this.Database.ExecuteSqlCommand(sql);
+            this.Database.ExecuteSqlRaw(sql);
         }
 
         ///----------------------------------------------------------------
@@ -892,7 +903,7 @@ namespace DataModel
             if (force || StorageLocations.Include(x => x.LocationType).FirstOrDefault(x => x.LocationID == 1).Path == null)
             {
                 TaskTimer t = new TaskTimer("timer");
-                Database.ExecuteSqlCommand("update StorageLocations set Path = GetLocationPath(LocationID)");
+                Database.ExecuteSqlRaw("update StorageLocations set Path = GetLocationPath(LocationID)");
                 Locations.GetLocations();
             }
         }
@@ -910,7 +921,7 @@ namespace DataModel
         public void UpdateMissingLocationPaths()
         {
             TaskTimer t = new TaskTimer("timer");
-            Database.ExecuteSqlCommand("update StorageLocations set Path = GetLocationPath(LocationID) where Path is NULL");
+            Database.ExecuteSqlRaw("update StorageLocations set Path = GetLocationPath(LocationID) where Path is NULL");
             int[] missing_paths = StorageLocations.Include(x => x.LocationType).Where(x => x.Path == null).Select(x => x.LocationID).ToArray();
             if (missing_paths.Length > 0)
             {
@@ -1592,7 +1603,13 @@ namespace DataModel
                 Text = text,
                 MessageLevel = message_level
             };
-            LogEntries.Add(entry);
+
+
+            Debug.WriteLine("~~~  Entry Item: " + JsonConvert.SerializeObject(entry));
+
+            var newItem = LogEntries.Add(entry);
+            Debug.WriteLine("~~~  New Item!: " + newItem);
+
             if (save_changes) SaveChanges();
         }
 
@@ -1610,6 +1627,7 @@ namespace DataModel
 
         public void LogInfo(string login, string category, string text, bool save_changes = true)
         {
+            Debug.WriteLine("~~~  Log Info: " + login);
             AddLogEntry(login, category, text, 0, save_changes);
         }
 
