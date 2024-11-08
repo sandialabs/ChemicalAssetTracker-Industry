@@ -78,6 +78,7 @@
                                     <tr><td>Expiration Date</td><td>{{item.ExpirationDate | date}}</td></tr>
                                     <tr><td>Quantity</td><td>{{qty(item)}}</td></tr>
                                     <tr><td>Units</td><td>{{containerUnit(item)}} | {{item.ContainerUnit.UnitAbbreviation}}</td></tr>
+                                    <tr><td>Location</td><td>{{parent_location(item.Location)}} hh {{parent_location(item.Location)}}</td></tr>
                                 </tbody>
                             </table>
                         </v-card-text>
@@ -150,6 +151,7 @@
                         { header: "Units", field: "ContainerUnit.UnitAbbreviation", width: 70, align: 'center', filtered: true, enabled: true },
                         { header: "State", field: "State", width: 70, align: 'center', filtered: true, enabled: false },
                         { header: "Notes", field: "Notes", width: 300, align: 'left', filtered: true, enabled: false },
+                        { header: "Location", field: "Location.TopTiers", width: 300, align: 'left', filtered: true, enabled: true },
                     ],
                 },
                 inventory: [],
@@ -218,8 +220,8 @@
                         onsuccess: function (ajax_result) {
                             console.log("refresh: onsucess:", ajax_result);
                             self.search_settings = ajax_result.Data.SearchSettings;
-                            //console.table(ajax_result.Data.SearchSettings);
                             self.inventory = ajax_result.Data.Inventory;
+                            console.log(self.inventory);
                         }
                     })
                 },
@@ -238,6 +240,10 @@
                         elem.click();
                         document.body.removeChild(elem);
                     }
+                },
+
+                parent_location(item) {
+                    return "test";
                 },
 
                 save_csv: function () {
@@ -286,8 +292,6 @@
                 },
 
                 containerUnit: function (item) {
-                    console.log(JSON.stringify(item));
-                    console.log("Abbreviation:", item.ContainerUnit.UnitAbbreviation);
                     if (item.ContainerUnit && item.ContainerUnit.UnitAbbreviation) return item.ContainerUnit.UnitAbbreviation;
                     else return "";
                 },

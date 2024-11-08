@@ -155,6 +155,7 @@
                 query_columns: undefined,
                 fromdate: undefined,
                 todate: undefined,
+                chemical_name: "",
             },
             mounted: function () {
                 this.refresh();
@@ -275,6 +276,7 @@
                     let parameters = [];
                     if (this.fromdate) parameters.push({ DataType: 'datetime', Name: "FromDate", Value: this.fromdate });
                     if (this.todate) parameters.push({ DataType: 'datetime', Name: "ToDate", Value: this.todate });
+                    if (this.chemical_name) parameters.push({ DataType: 'string', Name: "chemical_name", Value: this.chemical_name });
                     let postdata = {
                         DatabaseQueryID: this.edit_query.DatabaseQueryID,
                         Parameters: parameters,

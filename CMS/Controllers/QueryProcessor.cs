@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DatabaseClasses;
 using System.Globalization;
+using System.Diagnostics;
 
 namespace CMS.Controllers
 {
@@ -124,6 +125,7 @@ namespace CMS.Controllers
             string hostname = GetConnectionSetting(connection_settings, "server", "data source");
             string user = GetConnectionSetting(connection_settings, "user", "user id");
             string pswd = GetConnectionSetting(connection_settings, "password");
+     Debug.WriteLine("SQL Query: " + sql);
             using (MySqlDatabase db = new MySqlDatabase(hostname, "cms", user, pswd))
             {
                 result = db.Query(sql, bindings);

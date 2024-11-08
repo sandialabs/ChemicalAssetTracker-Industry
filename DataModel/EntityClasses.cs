@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 //using static ClosedXML.Excel.XLPredefinedFormat;
@@ -88,6 +89,9 @@ namespace DataModel
 
         [NotMapped]
         public string ShortLocation { get; set; }
+
+        [NotMapped]
+        public string TopTiers { get; set; }
 
 
         public override string ToString()
@@ -505,6 +509,9 @@ namespace DataModel
         public string ShortLocation { get; set; }
 
         [NotMapped]
+        public string TopTiers { get; set; }
+
+        [NotMapped]
         // Interface to item's flags for accessing flags by name
         public InventoryItemFlags ItemFlags { get; set; }
 
@@ -644,6 +651,9 @@ namespace DataModel
         {
             if (force || FullLocation == null) FullLocation = db.GetLocationName(LocationID, 1);
             if (force || ShortLocation == null) ShortLocation = db.GetShortLocationName(LocationID);
+            //if (force || TopTiers == null) ShortLocation = db.GetShortLocationName(LocationID);
+            //string TopTiers = db.InitializeLocationParents(LocationID);
+            Debug.WriteLine("~~~ Top Tiers Test: " + TopTiers);
             //if (String.IsNullOrEmpty(SiteName))
             //{
             //    var site = db.FindLocation(SiteID);

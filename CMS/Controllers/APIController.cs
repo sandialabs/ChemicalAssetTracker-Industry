@@ -192,7 +192,6 @@ namespace CMS.Controllers
                     UserInfo user_info = m_account_helper.GetUser(username);
                     List<InventoryItem> inventory;
                     inventory = db.SearchInventoryNoauth(user_info.HomeLocationID, settings);
-    Debug.WriteLine(JsonConvert.SerializeObject(inventory).ToString());
                     LocationSubtree subtree = db.GetCachedLocations(username, settings.RootID);
                     string message = "Success";
                     if (inventory.Count == CMSDB.MaxInventoryRows) message = $"The total number of inventory items returned was limited to {CMSDB.MaxInventoryRows}";
@@ -445,7 +444,7 @@ namespace CMS.Controllers
                         db.SaveChanges();
                         item = ReadInventoryItem(item.InventoryID, db);
                         result.Set("UpdatedItem", item);
-                        result.Succeed($"Inventory item #{item.InventoryID} ({item.Barcode}) successfully updated.");
+                        result.Succeed($"Inventory item #{item.InventoryID} ({item.Barcode}) successfully updated. {item.RemainingQuantity} {item.ContainerUnit.UnitAbbreviation} remaining in {item.Quantity} containers ");
                         db.LogInfo(User.Identity.Name, "inventory update", result.Message);
                     }
                 }
@@ -1781,6 +1780,7 @@ namespace CMS.Controllers
         public string CASNumber { get; set; }
         public string ShortLocation { get; set; }
         public string FullLocation { get; set; }
+        public string TopTiers { get; set; }
         public string Owner { get; set; }
         public string Group { get; set; }
         public string ContainerUnit { get; set; }
@@ -1793,6 +1793,7 @@ namespace CMS.Controllers
             CASNumber = item.CASNumber;
             ShortLocation = item.Location.ShortLocation;
             FullLocation = item.Location.FullLocation;
+            TopTiers = item.TopTiers ?? "Test";
             Owner = item.Owner == null ? "" : item.Owner.Name;
             Group = item.Group == null ? "" : item.Group.Name;
             ContainerUnit = item.ContainerUnit == null ? "" : item.ContainerUnit.Name;

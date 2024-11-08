@@ -1,5 +1,8 @@
 ﻿using Common;
 using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.Office2010.Excel;
+using DocumentFormat.OpenXml.Presentation;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -574,14 +577,12 @@ namespace DataModel
             MaxInventoryRows = GetIntSetting(MaxInventoryRowsKey, MaxInventoryRows);
             if (settings.ItemsPerPage == 0) settings.ItemsPerPage = MaxInventoryRows;
 
-            LocationSubtree subtree = GetSearchSubtree(root_id);
-            int[] valid_location_ids = subtree.Locations.Select(x => x.LocationID).ToArray();
             // build the query
-            var query = InventoryItems
+            IQueryable<InventoryItem> query = InventoryItems
                 .Include(x => x.Group)
                 .Include(x => x.Owner)
                 .Include(x => x.ContainerUnit)
-                .Where(x => valid_location_ids.Contains(x.LocationID));
+                .AsQueryable(); // Cast to IQueryable<InventoryItem>
 
             if (string.IsNullOrEmpty(settings.BarCode) == false)
                 query = query.Where(x => x.Barcode.Contains(settings.BarCode));
@@ -603,18 +604,31 @@ namespace DataModel
                 .ToList();
             result.ForEach(x => x.InitializeItemFlags(this));
 
-            List<InventoryItem> test = InventoryItems
-                .Include(x => x.Group)
-                .Include(x => x.Owner)
-                .Include(x => x.ContainerUnit)
-                .Where(x => valid_location_ids.Contains(x.LocationID)).ToList();
-            Debug.WriteLine("~~~  TESTING  ~~~");
-            Debug.WriteLine(JsonConvert.SerializeObject(test).ToString());
-
             return result;
         }
 
+        public string InitializeLocationParents(int location_id)
+        {
+            StorageLocation loc = StorageLocations.Where(l => l.LocationID == location_id).FirstOrDefault();
+            List<string> parent_locs = new List<string>();
+            parent_locs = GetLocationParents(loc, parent_locs);
 
+            string top_parents = string.Join("/", parent_locs);
+
+            return top_parents;
+        }
+
+        public List<string> GetLocationParents(StorageLocation loc, List<string> parent_locs)
+        {
+            if (loc.LocationLevel > 0)
+            {
+                if (loc.LocationLevel < 3) parent_locs.Append(loc.Name);
+                StorageLocation parent = this.FindLocation(loc.ParentID);
+                parent_locs = GetLocationParents(loc, parent_locs);
+            }
+
+            return parent_locs;
+        }
 
 
         public void DeleteItem(InventoryItem item, RemovedItem.ERemovalReason reason, string username, bool save_changes)
@@ -2499,10 +2513,43 @@ namespace DataModel
         {
             if (String.IsNullOrEmpty(loc.FullLocation))
             {
+                //List<int> parents = this.GetLocationParents(loc, new List<int>());
                 loc.FullLocation = loc.Path;
                 loc.ShortLocation = loc.Path;
+                loc.TopTiers = InitializeLocationParents(loc.Path);
+                //loc.TopTiers = String.Join(",", parents);
             }
         }
+
+        protected string InitializeLocationParents(string path)
+        {
+            string topTiers = null;
+            int firstDelimiter = path.IndexOf("/");
+            if (firstDelimiter > 0)
+            {
+                topTiers = path.Substring(0, firstDelimiter);
+                int secondDelimiter = path.IndexOf("/", firstDelimiter + 1);
+                if (secondDelimiter > 0)
+                {
+                    topTiers = path.Substring(0, secondDelimiter);
+                }
+            }
+
+
+            return topTiers;
+        }
+
+        //public List<int> GetLocationParents(StorageLocation loc, List<int> parent_ids)
+        //{
+        //    if (loc.LocationLevel > 0)
+        //    {
+        //        if (loc.LocationLevel < 3) parent_ids.Append(loc.LocationID);
+        //        StorageLocation parent = this.FindLocation(loc.ParentID);
+        //        parent_ids = GetLocationParents(loc, parent_ids);
+        //    }
+
+        //    return parent_ids;
+        //}
 
         public static string SitePart(string location_name, int ix)
         {
