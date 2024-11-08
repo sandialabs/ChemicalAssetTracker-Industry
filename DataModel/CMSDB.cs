@@ -1,8 +1,4 @@
 ﻿using Common;
-using DocumentFormat.OpenXml.Bibliography;
-using DocumentFormat.OpenXml.Office2010.Excel;
-using DocumentFormat.OpenXml.Presentation;
-using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -518,6 +514,8 @@ namespace DataModel
             MaxInventoryRows = GetIntSetting(MaxInventoryRowsKey, MaxInventoryRows);
             if (settings.ItemsPerPage == 0) settings.ItemsPerPage = MaxInventoryRows;
 
+            Debug.WriteLine("SearchInventory");
+
             // see if this user subtree has been cached
             LocationSubtree subtree = GetCachedLocations(login_name, root_id);
             int[] valid_locations = subtree.Locations.OrderBy(x => x.LocationLevel).Select(x => x.LocationID).ToArray();
@@ -582,6 +580,7 @@ namespace DataModel
                 .Include(x => x.Group)
                 .Include(x => x.Owner)
                 .Include(x => x.ContainerUnit)
+                .Include(x => x.Location)
                 .AsQueryable(); // Cast to IQueryable<InventoryItem>
 
             if (string.IsNullOrEmpty(settings.BarCode) == false)
@@ -602,7 +601,10 @@ namespace DataModel
                 .Skip(settings.ResultOffset)
                 .Take(settings.ItemsPerPage)
                 .ToList();
-            result.ForEach(x => x.InitializeItemFlags(this));
+            result.ForEach(x => {
+                x.InitializeItemFlags(this);
+                x.TopTiers = x.GetTopTierLocation(this, x.LocationID);
+            });
 
             return result;
         }

@@ -589,6 +589,18 @@ namespace DataModel
             return InitializeItemFlags(casdata);
         }
 
+        public string GetTopTierLocation(CMSDB db, int locationID)
+        {
+            StorageLocation loc = db.FindLocation(locationID);
+            if (loc.LocationLevel < 3)
+            {
+                return loc.ShortLocation;
+            }
+            else
+            {
+                return GetTopTierLocation(db, loc.ParentID);
+            }
+        }
 
         ///----------------------------------------------------------------
         ///

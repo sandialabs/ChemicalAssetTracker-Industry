@@ -1,4 +1,8 @@
 ﻿<template>
+    <!-- ------------------------------------------------------ -->
+    <!-- This is the intercafe for the modal on the Inventory   -->
+    <!-- page where you can create an edit Inventory Items      -->
+    <!-- ------------------------------------------------------ -->
     <div class="text-xs-center">
         <v-dialog persistent v-model="item_dialog_active" :width="width">
             <v-card class="noborder">
@@ -77,7 +81,7 @@
                                     <v-text-field type="date" label="Stock Checked" v-model="itemdata.StockCheckTime" v-bind:readonly="readonly" max="todays_date"></v-text-field>
                                 </td>
                                 <td>
-                                    <v-text-field type="number"  v-model="itemdata.Quantity" label="Number of Containers" v-bind:readonly="readonly" :disabled="itemdata.Refillable"></v-text-field>
+                                    <v-text-field type="number" v-model="itemdata.Quantity" label="Number of Containers" v-bind:readonly="readonly" :disabled="itemdata.Refillable"></v-text-field>
                                 </td>
                             </tr>
                         </table>
@@ -85,7 +89,7 @@
                     <v-layout>
                         <v-flex>
                             <div>Notes</div>
-                            <textarea label="Notes" style="width: 100%; border: 1px solid gray;" v-model="itemdata.Notes" v-bind:readonly="readonly"  @input="on_modified">Notes</textarea>
+                            <textarea label="Notes" style="width: 100%; border: 1px solid gray;" v-model="itemdata.Notes" v-bind:readonly="readonly" @input="on_modified">Notes</textarea>
                         </v-flex>
                     </v-layout>
                     <!-- ------------------------------------------------------ -->
@@ -117,11 +121,11 @@
                             <tr v-for="(row, i) in itemdata_flags" :key="i">
                                 <td v-for="(flag, j) in row" :key="j">
                                     <label v-if="flag">
-                                        <input type="checkbox" v-on:changed="on_modified" class="browser-default" :disabled="readonly || flag.IsReadonly" v-model="flag.Value" @input="on_hazard_flag_input"/>
+                                        <input type="checkbox" v-on:changed="on_modified" class="browser-default" :disabled="readonly || flag.IsReadonly" v-model="flag.Value" @input="on_hazard_flag_input" />
                                         <span class="attr">{{ flag.Label }}</span>
                                         <!--
-                        <v-checkbox dense :label="flag.Label" v-model="flag.Value" style='margin-top:0; margin-bottom:0; padding: 0;'></v-checkbox>
-                        -->
+                                        <v-checkbox dense :label="flag.Label" v-model="flag.Value" style='margin-top:0; margin-bottom:0; padding: 0;'></v-checkbox>
+                                        -->
                                     </label>
                                 </td>
                             </tr>
@@ -630,46 +634,53 @@ const mymodule = {
 
         on_cas_input: function() {
             let item = this.itemdata;
-            let casnumber = item.CASNumber;
+            let casNumberList = item.CASNumber;
             this.on_modified();
             //if (this.debug) console.log("on_cas_input: " + casnumber);
-            if (item.InventoryID == 0) {
-                if (casnumber.length == 0) {
+            //if (item.InventoryID == 0) {
+            if (casNumberList.length == 0) {
                     // CAS # has become empty, uncheck all the flags
                     this.reset_hazard_flags(item._flagobjects);
                     return;
                 }
                 let self = this;
-                if (casnumber.length > 0  && utils.is_cas_number(casnumber)) {
-                    if (this.debug) console.log('Looking up "' + casnumber + '"');
-                    get_hazard_information_for_casnumber(casnumber, function(result) {
-                        if (self.debug) {
-                            if (result) console.log("itemdialog.vue - have hazard results for " + casnumber, result);
-                            else console.log("No hazard date found for " + casnumber);
-                        }
-                        if (result) {
-                            self.reset_hazard_flags(item._flagobjects);
-                            let flags = self.flatten_flags(item._flagobjects);
-                            Object.keys(flags).forEach((key) => {
-                                let hazard = key;
-                                let flag = flags[key];
-                                //console.log("    updating " + key);
-                                // hazard information flags for non-COC start with "GHS_"
-                                if (!key.startsWith("COC")) {
-                                    hazard = "GHS_" + key;
-                                    //console.log("        using result key " + hazard);
-                                }
-                                let newvalue = result[hazard];
-                                if (newvalue && self.debug) console.log("    setting " + flag.FlagName + " to " + newvalue);
-                                flag.Value = newvalue;
-                            });
-                            self.checkmark_message = "GHS pictograms as indicated in the Annex VI of the CLP Regulation (EU REGULATION (EC) No 1272/2008)";
-                        }
-                        else self.checkmark_message = ' ';
-                    });
-                }
-                else self.checkmark_message = ' ';
-            }
+
+            let cas_array = casNumberList.split(',').map(s => s.trim());
+                cas_array.forEach((value, index) => {
+                    let casnumber = value;
+
+                    if (casnumber.length > 0 && utils.is_cas_number(casnumber)) {
+                        if (this.debug) console.log('Looking up "' + casnumber + '"');
+                        get_hazard_information_for_casnumber(casnumber, function (result) {
+                            if (self.debug) {
+                                if (result) console.log("itemdialog.vue - have hazard results for " + casnumber, result);
+                                else console.log("No hazard date found for " + casnumber);
+                            }
+                            if (result) {
+                                self.reset_hazard_flags(item._flagobjects);
+                                let flags = self.flatten_flags(item._flagobjects);
+                                Object.keys(flags).forEach((key) => {
+                                    let hazard = key;
+                                    let flag = flags[key];
+                                    //console.log("    updating " + key);
+                                    // hazard information flags for non-COC start with "GHS_"
+                                    if (!key.startsWith("COC")) {
+                                        hazard = "GHS_" + key;
+                                        //console.log("        using result key " + hazard);
+                                    }
+                                    let newvalue = result[hazard];
+                                    if (newvalue && self.debug) console.log("    setting " + flag.FlagName + " to " + newvalue);
+                                    flag.Value = newvalue;
+                                });
+                                self.checkmark_message = "GHS pictograms as indicated in the Annex VI of the CLP Regulation (EU REGULATION (EC) No 1272/2008)";
+                            }
+                            else self.checkmark_message = ' ';
+                        });
+                    }
+                    else self.checkmark_message = ' ';
+                });
+
+            //}
         },
 
         open_location_picker: function() {

@@ -354,10 +354,7 @@ namespace CMS.Controllers
         [Authorize(Roles = "admin,manage,edit,view")]
         public AjaxResult RunReport([FromBody] ReportRequest report_request)
         {
-            Debug.WriteLine("~~ Report Request ~~");
-            Debug.WriteLine(JsonConvert.SerializeObject(report_request).ToString());
             AjaxResult result = new AjaxResult("ReportController.RunReport");
-            Debug.WriteLine(JsonConvert.SerializeObject(result).ToString());
             try
             {
                 using (CMSDB db = new CMSDB())
