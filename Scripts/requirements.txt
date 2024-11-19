@@ -1,5 +1,5 @@
 xlrd
 pyodbc
 dotmap
-pymysql
 cryptography
+PyMySQL

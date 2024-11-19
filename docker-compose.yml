@@ -1,0 +1,49 @@
+services:
+  mysql:
+    #image: mysql:8.0
+    image: cat-i-db
+    container_name: mysql-container
+    # environment:
+      # MYSQL_ROOT_PASSWORD: rootpassword
+      # MYSQL_DATABASE: cms
+      # MYSQL_USER: cms
+      # MYSQL_PASSWORD: cms
+      # MYSQL_LOG_BIN_TRUST_FUNCTION_CREATORS: 1
+    ports:
+      - "3306:3306"
+    networks:
+      - mynetwork
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # volumes:
+    #   - ./DataModel/InitializationScripts:/docker-entrypoint-initdb.d
+    command: --lower_case_table_names=1
+  app:
+    image: cat-i-app
+    container_name: cat-i-container
+    # build:
+    #   context: .
+    #   dockerfile: CMS/Dockerfile
+    ports:
+      - "80:80"
+      - "443:443"
+      - "44389:44389"
+      - "5353:5353"
+    networks:
+      - mynetwork
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ConnectionStrings__DefaultConnection=Server=mysql;database=cmsusers;user=cms;password=cms;pooling=true;
+      - ConnectionStrings__CMSConnection=Server=mysql;database=cms;user=cms;password=cms;pooling=true;
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=certificate_password  # Set your password here
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/certificate.pfx
+    depends_on:
+        mysql:
+            condition: service_healthy
+networks:
+  mynetwork:
+    driver: bridge

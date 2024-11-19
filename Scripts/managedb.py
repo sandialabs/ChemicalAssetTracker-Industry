@@ -18,8 +18,13 @@ def run(cmd):
 
 
 def run_python(cmd):
-    os.system(python + " " + cmd)
-
+    print(cmd)
+    original_path = os.environ['PATH']
+    # os.environ['PATH'] = "C:\Program/ Files\Python311\python.exe;" + original_path
+    # print(os.environ['PATH'])
+    #os.system('"C:\\Program Files\\Python311\\python.exe"' + " " + cmd)
+    os.system('py ' + cmd)
+    # os.environ['PATH'] = original_path
 
 def confirm(prompt):
     ans = input(prompt + "(y/n) ")
@@ -99,7 +104,7 @@ def do_clean(ask=True):
     hostname = get_arg('-h', 'localhost')
     #print("Hostname is " + hostname)
     user, pswd = get_mysql_info()
-
+    print(user)
     t1 = time.time()
 
     if have_arg('-users'):

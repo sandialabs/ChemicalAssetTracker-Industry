@@ -4,7 +4,7 @@ import json
 import random
 from utils import *
 import pymysql
-from dotmap import DotMap
+#from dotmap import DotMap
 import getpass
 from load_reports import *
 from import_chemicals_of_concern import *
@@ -104,10 +104,12 @@ def show_usage():
 
 
 hostname = get_arg('-h', "localhost")
-#print("Hostname is " + hostname)
+print("Hostname is " + hostname)
 user, pswd = get_mysql_info()
 if user == None or pswd == None:
+    print("Did not acquire database")
     exit(0)
+
 
 institution = get_arg('-institution')
 create_testdata = have_arg('-testdata')
@@ -126,7 +128,7 @@ if institution == None:
     show_usage()
     exit(0)
 
-
+print("Acquired command line arguments")
 verbose = False
 
 banner("Creating clean database", "", f"Database host is {hostname}")
@@ -147,9 +149,9 @@ except Exception as ex:
     exit(1)
 
 
-
+print("Start db commands")
 # create empty database
-db.execute_nonquery("create database cms CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci")
+db.execute_nonquery("create database IF NOT EXISTS cms CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci")
 # create the cms account
 print("Setting up the cms account in MySQL")
 db.execute_nonquery("create user if not exists 'cms'@'%' identified by 'cms'")
@@ -158,11 +160,13 @@ db.execute_nonquery("grant all privileges on cmsusers.* to 'cms'@'%'")
 
 # run initialization script
 os.chdir("../DataModel")
+print(f"mysql -u {user} -p{pswd} -h {hostname} cms < initializecmsdb.sql")
 run(f"mysql -u {user} -p{pswd} -h {hostname} cms < initializecmsdb.sql", verbose)
 
 # run dbutil to complete initialization
 os.chdir("../dbutil")
 print("Running dbutil to initialize database")
+print(f'dotnet run -v q -create -noprompt -hostname {hostname} -cmsuser {user} -cmspswd {pswd} > cmsout.txt')
 run(f'dotnet run -v q -create -noprompt -hostname {hostname} -cmsuser {user} -cmspswd {pswd} > cmsout.txt', verbose=verbose, password=pswd)
 
 print("Initialize Settings table")

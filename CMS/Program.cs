@@ -17,7 +17,7 @@ namespace CMS
         //---------------------------------------------------------------------
         
         public const bool USE_HTTPS = false;
-        public const int LISTEN_PORT = 5353;
+        public const int LISTEN_PORT = 443;
         
         static bool UsingProxy = false;
         private static int _listenPort;
@@ -112,58 +112,38 @@ namespace CMS
         }
 
 
-        //public static IWebHost BuildWebHost(string[] args)
-        //{
-        //    if (UsingProxy)
-        //    {
-        //        Console.WriteLine("BuildWebHost is using reverse proxy mode");
-        //    }
-        //    return WebHost.CreateDefaultBuilder(args)
-        //        .UseStartup<Startup>()
-        //        // .UseUrls($"http://*:{ListenPort}/")
-        //        .UseKestrel(options =>
-        //        {
-        //            options.Listen(IPAddress.Any, ListenPort, listenOptions =>
-        //            {
-        //                if (_certificate != null)
-        //                    listenOptions.UseHttps(_certificate);
-        //            });
-        //        })
-        //        .Build();
-        //}
 
 
         //public static IHostBuilder CreateHostBuilder(string[] args) =>
         //    Host.CreateDefaultBuilder(args)
-        //.ConfigureWebHostDefaults(webBuilder =>
-        //{
-        //    webBuilder.ConfigureKestrel(options =>
-        //    {
-        //        options.Listen(IPAddress.Any, ListenPort, listenOptions =>
+        //        .ConfigureWebHostDefaults(webBuilder =>
         //        {
-        //            if (_certificate != null)
-        //                listenOptions.UseHttps(_certificate);
+        //            webBuilder.ConfigureKestrel(options =>
+        //            {
+        //                options.Listen(IPAddress.Any, ListenPort, listenOptions =>
+        //                {
+        //                    if (_certificate != null)
+        //                        listenOptions.UseHttps(_certificate);
+        //                });
+        //            })
+        //            .UseStartup<Startup>();
         //        });
-        //    })
-        //    .UseStartup<Startup>();
-        //});
 
 
-
-            public static IHostBuilder CreateHostBuilder(string[] args) =>
-                Host.CreateDefaultBuilder(args)
-                    .ConfigureWebHostDefaults(webBuilder =>
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+        Host.CreateDefaultBuilder(args)
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseStartup<Startup>();
+                webBuilder.UseKestrel(options =>
+                {
+                    options.ListenAnyIP(80); // HTTP
+                    options.ListenAnyIP(443, listenOptions =>
                     {
-                        webBuilder.ConfigureKestrel(options =>
-                        {
-                            options.Listen(IPAddress.Any, ListenPort, listenOptions =>
-                            {
-                                if (_certificate != null)
-                                    listenOptions.UseHttps(_certificate);
-                            });
-                        })
-                        .UseStartup<Startup>();
+                        listenOptions.UseHttps("/https/certificate.pfx", "certificate_password"); // HTTPS
                     });
+                });
+            });
 
 
     }
