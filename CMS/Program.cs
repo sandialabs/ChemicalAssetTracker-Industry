@@ -171,7 +171,7 @@ namespace CMS
         {
             webBuilder.ConfigureKestrel(options =>
             {
-                options.ListenAnyIP(80); // HTTP
+                //options.ListenAnyIP(80); // HTTP
                 options.ListenAnyIP(443, listenOptions =>
                 {
                     if (_certificate != null)

@@ -3,9 +3,9 @@
 # This stage is used when running from VS in fast mode (Default for Debug configuration)
 FROM nexus.web.sandia.gov:8084/dotnet/aspnet:6.0 AS base
 WORKDIR /app
-EXPOSE 80
+# EXPOSE 80
 EXPOSE 443
-EXPOSE 44389
+# EXPOSE 44389
 
 
 # This stage is used to build the service project

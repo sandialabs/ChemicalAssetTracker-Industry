@@ -29,10 +29,10 @@ services:
       dockerfile: CMS/Dockerfile
     image: cat-i-app
     ports:
-      - "80:80"
+      # - "80:80"
       - "443:443"
-      - "44389:44389"
-      - "5353:5353"
+      # - "44389:44389"
+      # - "5353:5353"
     networks:
       - mynetwork
     volumes:
