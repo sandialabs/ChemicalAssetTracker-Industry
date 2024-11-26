@@ -22,11 +22,12 @@ services:
     #   - ./DataModel/InitializationScripts:/docker-entrypoint-initdb.d
     command: --lower_case_table_names=1
   app:
-    image: cat-i-app
     container_name: cat-i-container
-    # build:
-    #   context: .
-    #   dockerfile: CMS/Dockerfile
+    # Remove the build stage if you want to pull the existing container.
+    build:
+      context: .
+      dockerfile: CMS/Dockerfile
+    image: cat-i-app
     ports:
       - "80:80"
       - "443:443"
@@ -34,13 +35,15 @@ services:
       - "5353:5353"
     networks:
       - mynetwork
+    volumes:
+      - ~/.aspnet/https:/https:ro
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
       - ConnectionStrings__DefaultConnection=Server=mysql;database=cmsusers;user=cms;password=cms;pooling=true;
       - ConnectionStrings__CMSConnection=Server=mysql;database=cms;user=cms;password=cms;pooling=true;
       - ASPNETCORE_Kestrel__Certificates__Default__Password=certificate_password  # Set your password here
-      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/certificate.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
     depends_on:
         mysql:
             condition: service_healthy

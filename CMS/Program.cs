@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
+using Org.BouncyCastle.Asn1.IsisMtt.Ocsp;
 
 namespace CMS
 {
@@ -60,22 +63,37 @@ namespace CMS
                 webbuilder_args.Add(arg);
             }
 
+            string docker_cert_path = "/https/aspnetapp.pfx";
+            string docker_cert_password = "certificate_password";
+
             try
             {
-                if (USE_HTTPS)
-                {
+                //if (USE_HTTPS)
+                //{
                     // https://stackoverflow.com/a/46336873/706747
                     using (X509Store store = new X509Store(StoreName.My))
                     {
                         store.Open(OpenFlags.ReadOnly);
                         X509Certificate2Collection certs = store.Certificates.Find(X509FindType.FindBySubjectName, "localhost", false);
+                    
+                    //if (File.Exists(docker_cert_path))
+                    //{
+                    //    Console.WriteLine("File exists.");
+                    //    certs.Import(docker_cert_path, docker_cert_password, X509KeyStorageFlags.PersistKeySet);
+                    //}
+                    //Console.WriteLine("Certificate Count: " + store.Certificates.Count);
+                    //foreach (X509Certificate2 cert in store.Certificates)
+                    //{
+                    //    Console.WriteLine(JsonConvert.SerializeObject(cert).ToString());
+                    //}
                         if (certs.Count > 0)
                             _certificate = certs[0];
                     }
-                }
+                //}
             }
             catch (Exception)
             {
+                Console.WriteLine("Could not load certificate.");
             }
 
             //BuildWebHost(webbuilder_args.ToArray()).Run();
@@ -130,21 +148,37 @@ namespace CMS
         //        });
 
 
+        // This works if a certificate is provided in the directory and file name as defined below - would need to update the server to match.
+        //public static IHostBuilder CreateHostBuilder(string[] args) =>
+        //Host.CreateDefaultBuilder(args)
+        //    .ConfigureWebHostDefaults(webBuilder =>
+        //    {
+        //    webBuilder.UseStartup<Startup>();
+        //    webBuilder.UseKestrel(options =>
+        //    {
+        //        options.ListenAnyIP(80); // HTTP
+        //        options.ListenAnyIP(443, listenOptions =>
+        //        {
+        //            listenOptions.UseHttps("/https/aspnetapp.pfx", "certificate_password"); // HTTPS
+        //        });
+        //    });
+        //});
+
+
         public static IHostBuilder CreateHostBuilder(string[] args) =>
-        Host.CreateDefaultBuilder(args)
-            .ConfigureWebHostDefaults(webBuilder =>
+    Host.CreateDefaultBuilder(args)
+        .ConfigureWebHostDefaults(webBuilder =>
+        {
+            webBuilder.ConfigureKestrel(options =>
             {
-                webBuilder.UseStartup<Startup>();
-                webBuilder.UseKestrel(options =>
+                options.ListenAnyIP(80); // HTTP
+                options.ListenAnyIP(443, listenOptions =>
                 {
-                    options.ListenAnyIP(80); // HTTP
-                    options.ListenAnyIP(443, listenOptions =>
-                    {
-                        listenOptions.UseHttps("/https/certificate.pfx", "certificate_password"); // HTTPS
-                    });
+                    if (_certificate != null)
+                                listenOptions.UseHttps(_certificate);
                 });
-            });
-
-
+            })
+            .UseStartup<Startup>();
+        });
     }
 }

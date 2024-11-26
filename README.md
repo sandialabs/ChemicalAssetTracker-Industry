@@ -158,4 +158,12 @@ In order to deploy CAT to Azure, you will need to have an Azure account with an 
     Python scripts for managing the database.
     UnitTests<br>
 
+## Containerizing the application
+### Creating the SSL Certificate (Self-Signed)
 
+Open a PowerShell termainal as Administrator and run the folloing commands
+$cert = New-SelfSignedCertificate -DnsName "localhost" -CertStoreLocation "cert:\LocalMachine\My"
+$certKeyPath = "<Project Directory Path>\certificates\aspnetapp.pfx"
+$password = ConvertTo-SecureString '<Certificate Password>' -AsPlainText -Force
+$cert | Export-PfxCertificate -FilePath $certKeyPath -Password $password
+$rootCert = $(Import-PfxCertificate -FilePath $certKeyPath -CertStoreLocation 'Cert:\LocalMachine\Root' -Password $password)
