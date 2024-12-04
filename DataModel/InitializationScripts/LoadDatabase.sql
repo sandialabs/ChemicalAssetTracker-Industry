@@ -367,7 +367,7 @@ CREATE TABLE `InventoryItems` (
 
 LOCK TABLES `InventoryItems` WRITE;
 /*!40000 ALTER TABLE `InventoryItems` DISABLE KEYS */;
-INSERT INTO `InventoryItems` VALUES (392,'BC0001','75-21-8','Ethylene Oxide',16,NULL,NULL,3,'2023-03-15 00:00:00.000000','2024-05-21 00:00:00.000000',300,660,NULL,'liquid','** *            ',_binary '\0',NULL,NULL,NULL,'',NULL,NULL,NULL,0,_binary '\0',NULL,NULL,NULL,5,1,5),(393,'BI0001','7664-38-2','Orthophosphoric Acid',34,NULL,NULL,3,'2023-03-15 00:00:00.000000','2024-09-10 00:00:00.000000',200,1000,NULL,'liquid','** *            ',_binary '\0',NULL,NULL,NULL,'',NULL,NULL,NULL,0,_binary '\0',NULL,NULL,NULL,5,1,5),(394,'BI0003','21645-51-2','Chlorine Monoxide',35,NULL,NULL,1,'2023-03-15 00:00:00.000000','2024-06-04 00:00:00.000000',25,0,NULL,'solid','** *            ',_binary '\0',NULL,NULL,NULL,'',NULL,NULL,NULL,0,_binary '\0',NULL,NULL,NULL,4,1,10),(395,'BK0003','68441-17-8','Polyethylene Oxide',40,NULL,NULL,1,'2023-03-15 00:00:00.000000','2024-10-31 00:00:00.000000',300,0,NULL,'liquid','** *            ',_binary '\0',NULL,NULL,NULL,'',NULL,NULL,NULL,0,_binary '\0',NULL,NULL,NULL,5,1,5),(396,'BR0004','71-43-2','Benzene',31,NULL,NULL,4,'2023-02-10 00:00:00.000000','2024-07-03 00:00:00.000000',1,0,NULL,'liquid','** *            ',_binary '\0',NULL,NULL,NULL,'',NULL,NULL,NULL,0,_binary '\0',NULL,NULL,NULL,14,0,4),(397,'BK0002','64-19-7','Acetic Acid',39,NULL,NULL,2,'2023-03-15 00:00:00.000000','2024-07-05 00:00:00.000000',200,480,NULL,'liquid','** *            ',_binary '\0',NULL,NULL,NULL,'',NULL,NULL,NULL,0,_binary '\0',NULL,NULL,NULL,5,1,5),(398,'BK0001','1310-58-3','Potassium Hydroxide',23,NULL,NULL,3,'2023-03-15 00:00:00.000000','2024-05-21 00:00:00.000000',25,105,NULL,'solid','** *            ',_binary '\0',NULL,NULL,NULL,'',NULL,NULL,NULL,0,_binary '\0',NULL,NULL,NULL,4,1,10),(399,'BR0001','1299-86-1','Aluminum Carbide',28,NULL,NULL,4,'2023-02-10 00:00:00.000000','2024-07-03 00:00:00.000000',25,11,NULL,'solid','** *            ',_binary '\0',NULL,NULL,NULL,'',NULL,NULL,NULL,0,_binary '\0',NULL,NULL,NULL,4,0,28),(400,'BG0003','141-22-0','Castor Oil',38,NULL,NULL,1,'2023-03-15 00:00:00.000000','2024-12-11 00:00:00.000000',300,0,NULL,'liquid','** *            ',_binary '\0',NULL,NULL,NULL,'',NULL,NULL,NULL,0,_binary '\0',NULL,NULL,NULL,5,1,5),(401,'BR0002','7664-93-9','Sulfuric Acid',29,NULL,NULL,4,'2023-02-10 00:00:00.000000','2024-07-03 00:00:00.000000',40,0,NULL,'liquid','** *            ',_binary '\0',NULL,NULL,NULL,'',NULL,NULL,NULL,0,_binary '\0',NULL,NULL,NULL,5,0,4),(402,'BG0001','111-46-6','Diethylene Glycol',19,NULL,NULL,3,'2023-03-15 00:00:00.000000','2025-03-26 00:00:00.000000',300,350,NULL,'liquid','** *            ',_binary '\0',NULL,NULL,NULL,'',NULL,NULL,NULL,0,_binary '\0',NULL,NULL,NULL,5,1,5),(403,'BC0003','7722-84-1','Hydrogen Peroxide (50%)',94,NULL,NULL,1,'2023-03-15 00:00:00.000000','2024-10-31 00:00:00.000000',50,460,NULL,'liquid','              ',_binary '\0',NULL,NULL,NULL,'',NULL,NULL,NULL,0,_binary '\0',NULL,NULL,NULL,5,1,1),(404,'BR0003','532-32-1','Sodium Benzoate',30,NULL,NULL,4,'2023-02-10 00:00:00.000000','2024-07-03 00:00:00.000000',25,15,NULL,'solid','** *            ',_binary '\0',NULL,NULL,NULL,'',NULL,NULL,NULL,0,_binary '\0',NULL,NULL,NULL,4,0,20),(405,'BC0002','513-42-8,75-21-8','Methallyl Alcohol',93,NULL,NULL,2,'2023-03-15 00:00:00.000000','2024-07-05 00:00:00.000000',200,0,NULL,'liquid','** *X X  X X  ',_binary '\0',NULL,NULL,NULL,'',NULL,NULL,NULL,0,_binary '\0',NULL,NULL,NULL,5,1,5),(406,'BG0002','112-53-8','Lauryl Alcohol',37,NULL,NULL,2,'2023-03-15 00:00:00.000000','2024-08-01 00:00:00.000000',300,500,NULL,'liquid','** *          ',_binary '\0',NULL,NULL,NULL,'',NULL,NULL,NULL,0,_binary '\0',NULL,NULL,NULL,5,1,1),(407,'BI0002','7727-37-9','Liquid Nitrogen',36,NULL,NULL,2,'2023-03-15 00:00:00.000000','2024-07-22 00:00:00.000000',300,1400,NULL,'liquid','** *            ',_binary '\0',NULL,NULL,NULL,'',NULL,NULL,NULL,0,_binary '\0',NULL,NULL,NULL,5,1,5);
+-- INSERT INTO `InventoryItems` VALUES (392,'BC0001','75-21-8','Ethylene Oxide',16,NULL,NULL,3,'2023-03-15 00:00:00.000000','2024-05-21 00:00:00.000000',300,660,NULL,'liquid','** *            ',_binary '\0',NULL,NULL,NULL,'',NULL,NULL,NULL,0,_binary '\0',NULL,NULL,NULL,5,1,5),(393,'BI0001','7664-38-2','Orthophosphoric Acid',34,NULL,NULL,3,'2023-03-15 00:00:00.000000','2024-09-10 00:00:00.000000',200,1000,NULL,'liquid','** *            ',_binary '\0',NULL,NULL,NULL,'',NULL,NULL,NULL,0,_binary '\0',NULL,NULL,NULL,5,1,5),(394,'BI0003','21645-51-2','Chlorine Monoxide',35,NULL,NULL,1,'2023-03-15 00:00:00.000000','2024-06-04 00:00:00.000000',25,0,NULL,'solid','** *            ',_binary '\0',NULL,NULL,NULL,'',NULL,NULL,NULL,0,_binary '\0',NULL,NULL,NULL,4,1,10),(395,'BK0003','68441-17-8','Polyethylene Oxide',40,NULL,NULL,1,'2023-03-15 00:00:00.000000','2024-10-31 00:00:00.000000',300,0,NULL,'liquid','** *            ',_binary '\0',NULL,NULL,NULL,'',NULL,NULL,NULL,0,_binary '\0',NULL,NULL,NULL,5,1,5),(396,'BR0004','71-43-2','Benzene',31,NULL,NULL,4,'2023-02-10 00:00:00.000000','2024-07-03 00:00:00.000000',1,0,NULL,'liquid','** *            ',_binary '\0',NULL,NULL,NULL,'',NULL,NULL,NULL,0,_binary '\0',NULL,NULL,NULL,14,0,4),(397,'BK0002','64-19-7','Acetic Acid',39,NULL,NULL,2,'2023-03-15 00:00:00.000000','2024-07-05 00:00:00.000000',200,480,NULL,'liquid','** *            ',_binary '\0',NULL,NULL,NULL,'',NULL,NULL,NULL,0,_binary '\0',NULL,NULL,NULL,5,1,5),(398,'BK0001','1310-58-3','Potassium Hydroxide',23,NULL,NULL,3,'2023-03-15 00:00:00.000000','2024-05-21 00:00:00.000000',25,105,NULL,'solid','** *            ',_binary '\0',NULL,NULL,NULL,'',NULL,NULL,NULL,0,_binary '\0',NULL,NULL,NULL,4,1,10),(399,'BR0001','1299-86-1','Aluminum Carbide',28,NULL,NULL,4,'2023-02-10 00:00:00.000000','2024-07-03 00:00:00.000000',25,11,NULL,'solid','** *            ',_binary '\0',NULL,NULL,NULL,'',NULL,NULL,NULL,0,_binary '\0',NULL,NULL,NULL,4,0,28),(400,'BG0003','141-22-0','Castor Oil',38,NULL,NULL,1,'2023-03-15 00:00:00.000000','2024-12-11 00:00:00.000000',300,0,NULL,'liquid','** *            ',_binary '\0',NULL,NULL,NULL,'',NULL,NULL,NULL,0,_binary '\0',NULL,NULL,NULL,5,1,5),(401,'BR0002','7664-93-9','Sulfuric Acid',29,NULL,NULL,4,'2023-02-10 00:00:00.000000','2024-07-03 00:00:00.000000',40,0,NULL,'liquid','** *            ',_binary '\0',NULL,NULL,NULL,'',NULL,NULL,NULL,0,_binary '\0',NULL,NULL,NULL,5,0,4),(402,'BG0001','111-46-6','Diethylene Glycol',19,NULL,NULL,3,'2023-03-15 00:00:00.000000','2025-03-26 00:00:00.000000',300,350,NULL,'liquid','** *            ',_binary '\0',NULL,NULL,NULL,'',NULL,NULL,NULL,0,_binary '\0',NULL,NULL,NULL,5,1,5),(403,'BC0003','7722-84-1','Hydrogen Peroxide (50%)',94,NULL,NULL,1,'2023-03-15 00:00:00.000000','2024-10-31 00:00:00.000000',50,460,NULL,'liquid','              ',_binary '\0',NULL,NULL,NULL,'',NULL,NULL,NULL,0,_binary '\0',NULL,NULL,NULL,5,1,1),(404,'BR0003','532-32-1','Sodium Benzoate',30,NULL,NULL,4,'2023-02-10 00:00:00.000000','2024-07-03 00:00:00.000000',25,15,NULL,'solid','** *            ',_binary '\0',NULL,NULL,NULL,'',NULL,NULL,NULL,0,_binary '\0',NULL,NULL,NULL,4,0,20),(405,'BC0002','513-42-8,75-21-8','Methallyl Alcohol',93,NULL,NULL,2,'2023-03-15 00:00:00.000000','2024-07-05 00:00:00.000000',200,0,NULL,'liquid','** *X X  X X  ',_binary '\0',NULL,NULL,NULL,'',NULL,NULL,NULL,0,_binary '\0',NULL,NULL,NULL,5,1,5),(406,'BG0002','112-53-8','Lauryl Alcohol',37,NULL,NULL,2,'2023-03-15 00:00:00.000000','2024-08-01 00:00:00.000000',300,500,NULL,'liquid','** *          ',_binary '\0',NULL,NULL,NULL,'',NULL,NULL,NULL,0,_binary '\0',NULL,NULL,NULL,5,1,1),(407,'BI0002','7727-37-9','Liquid Nitrogen',36,NULL,NULL,2,'2023-03-15 00:00:00.000000','2024-07-22 00:00:00.000000',300,1400,NULL,'liquid','** *            ',_binary '\0',NULL,NULL,NULL,'',NULL,NULL,NULL,0,_binary '\0',NULL,NULL,NULL,5,1,5);
 /*!40000 ALTER TABLE `InventoryItems` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -526,7 +526,6 @@ CREATE TABLE `Refills` (
 
 LOCK TABLES `Refills` WRITE;
 /*!40000 ALTER TABLE `Refills` DISABLE KEYS */;
-INSERT INTO `Refills` VALUES (1,'ABC','L0942790','2024-09-30 00:00:00.000000','2024-10-02 00:00:00.000000',NULL,10,402,''),(2,'ABC','L93478590','2024-09-30 00:00:00.000000','2024-10-02 00:00:00.000000',NULL,10,402,''),(3,'ABC','L395802753902','2024-09-30 00:00:00.000000','2024-10-02 00:00:00.000000',NULL,100,402,''),(4,'flsajka','sfaf','2024-10-16 00:00:00.000000','2024-10-02 00:00:00.000000',NULL,100,403,''),(5,'bcmn','gmcmcm','2024-09-30 00:00:00.000000','2024-10-03 00:00:00.000000',NULL,10,403,''),(6,'ABC','L32 87208','2024-09-30 00:00:00.000000','2024-10-03 00:00:00.000000',NULL,15,398,''),(7,'Test','','2024-10-17 00:00:00.000000','2024-10-17 00:00:00.000000',NULL,10,392,''),(8,'Acme','','2024-11-01 00:00:00.000000','2024-11-04 00:00:00.000000',NULL,5,403,'');
 /*!40000 ALTER TABLE `Refills` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -696,25 +695,41 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`%` FUNCTION `GetLocationPath`(
-                location_id INTEGER
+CREATE DEFINER=`root`@`%` FUNCTION `GetLocationPath`(
+
+                location_id INTEGER
+
             ) RETURNS varchar(512) CHARSET utf8mb4
     READS SQL DATA
     DETERMINISTIC
-BEGIN
-                declare fullname varchar(512);
-                declare locname varchar(64);
-                declare tmpname varchar(64);
-                declare parent_id integer;
-                declare loclevel integer;
-    
-                set fullname = '';
-                select Name, LocationLevel, ParentID into fullname, loclevel, parent_id from StorageLocations where LocationID = location_id;
-                while loclevel > 1 do
-    	              select Name, LocationLevel, ParentID into tmpname, loclevel, parent_id from StorageLocations where LocationID = parent_id;
-		              set fullname = CONCAT(tmpname, '/', fullname);
-                end while;
-	            return fullname;
+BEGIN
+
+                declare fullname varchar(512);
+
+                declare locname varchar(64);
+
+                declare tmpname varchar(64);
+
+                declare parent_id integer;
+
+                declare loclevel integer;
+
+    
+
+                set fullname = '';
+
+                select Name, LocationLevel, ParentID into fullname, loclevel, parent_id from StorageLocations where LocationID = location_id;
+
+                while loclevel > 1 do
+
+    	              select Name, LocationLevel, ParentID into tmpname, loclevel, parent_id from StorageLocations where LocationID = parent_id;
+
+		              set fullname = CONCAT(tmpname, '/', fullname);
+
+                end while;
+
+	            return fullname;
+
             END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;

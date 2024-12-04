@@ -159,11 +159,33 @@ In order to deploy CAT to Azure, you will need to have an Azure account with an 
     UnitTests<br>
 
 ## Containerizing the application
-### Creating the SSL Certificate (Self-Signed)
+Enable the "build" sections of the docker-compose.yml by uncommenting them. There are build clauses for both the app container and the database container (if you need to recreate the database)
 
+### Creating a dev SSL Certificate
+Run the following command to create a development certificate for running the app on https.
+`dotnet dev-certs https -ep "$env:USERPROFILE\.aspnet\https\aspnetapp.pfx" -p certificate_password --trust`
+
+### Creating a Self-Signed SSL Certificate (Alternative option)
 Open a PowerShell termainal as Administrator and run the folloing commands
 $cert = New-SelfSignedCertificate -DnsName "localhost" -CertStoreLocation "cert:\LocalMachine\My"
 $certKeyPath = "<Project Directory Path>\certificates\aspnetapp.pfx"
 $password = ConvertTo-SecureString '<Certificate Password>' -AsPlainText -Force
 $cert | Export-PfxCertificate -FilePath $certKeyPath -Password $password
 $rootCert = $(Import-PfxCertificate -FilePath $certKeyPath -CertStoreLocation 'Cert:\LocalMachine\Root' -Password $password)
+
+In the project directory (there the docker-compose.yml is located), run the following command to build the containers from the images (or from the Dockerfiles referenced by the yml)
+`docker-compose up --wait`
+
+### Saving the images as files (for sharing)
+Run the docker save command with the target file destination and the image name for each image (app and database images)
+`docker save -o C:\temp\cat-i-app.tar cat-i-app`
+
+### push docker images to registry
+Get the image ID:
+`docker image ls`
+
+Tag the image with the registry address and a name (and optional version):
+`docker tag 98afcaeaf9ba cee-gitlab.sandia.gov:4567/gcbs-6820/cat/cat-i-db:latest`
+
+Push the image to the registry:
+`docker push cee-gitlab.sandia.gov:4567/gcbs-6820/cat/cat-i-app`

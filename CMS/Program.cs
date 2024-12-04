@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
+using DataModel;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
-using Org.BouncyCastle.Asn1.IsisMtt.Ocsp;
 
 namespace CMS
 {
@@ -63,8 +64,8 @@ namespace CMS
                 webbuilder_args.Add(arg);
             }
 
-            string docker_cert_path = "/https/aspnetapp.pfx";
-            string docker_cert_password = "certificate_password";
+            string docker_cert_path = Path.Combine("/https", "aspnetapp.pfx"); // "/https/aspnetapp.pfx";
+            string docker_cert_password = Environment.GetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Password"); // CMSDB.Configuration.GetSection("Certificate")["Password"].ToString(); // "certificate_password";
 
             try
             {
@@ -75,18 +76,18 @@ namespace CMS
                     {
                         store.Open(OpenFlags.ReadOnly);
                         X509Certificate2Collection certs = store.Certificates.Find(X509FindType.FindBySubjectName, "localhost", false);
-                    
-                    //if (File.Exists(docker_cert_path))
-                    //{
-                    //    Console.WriteLine("File exists.");
-                    //    certs.Import(docker_cert_path, docker_cert_password, X509KeyStorageFlags.PersistKeySet);
-                    //}
+
+                    if (File.Exists(docker_cert_path))
+                    {
+                        Console.WriteLine("File exists.");
+                        certs.Import(docker_cert_path, docker_cert_password, X509KeyStorageFlags.PersistKeySet);
+                    }
                     //Console.WriteLine("Certificate Count: " + store.Certificates.Count);
                     //foreach (X509Certificate2 cert in store.Certificates)
                     //{
                     //    Console.WriteLine(JsonConvert.SerializeObject(cert).ToString());
                     //}
-                        if (certs.Count > 0)
+                    if (certs.Count > 0)
                             _certificate = certs[0];
                     }
                 //}
@@ -169,7 +170,8 @@ namespace CMS
     Host.CreateDefaultBuilder(args)
         .ConfigureWebHostDefaults(webBuilder =>
         {
-            webBuilder.ConfigureKestrel(options =>
+            webBuilder // .UseKestrel()
+            .ConfigureKestrel(options =>
             {
                 //options.ListenAnyIP(80); // HTTP
                 options.ListenAnyIP(443, listenOptions =>

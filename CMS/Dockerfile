@@ -47,7 +47,7 @@ COPY --from=publish /app/publish .
 #COPY ["certificates/aspnetapp.pfx", "/https/aspnetapp.pfx"]
 
 # Set environment variables for the certificate
-ENV ASPNETCORE_Kestrel__Certificates__Default__Password=certificate_password
-ENV ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+# ENV ASPNETCORE_Kestrel__Certificates__Default__Password=certificate_password
+# ENV ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
 
 ENTRYPOINT ["dotnet", "CAT.dll"]

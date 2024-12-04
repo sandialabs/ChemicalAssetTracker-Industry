@@ -2518,7 +2518,7 @@ namespace DataModel
                 //List<int> parents = this.GetLocationParents(loc, new List<int>());
                 loc.FullLocation = loc.Path;
                 loc.ShortLocation = loc.Path;
-                loc.TopTiers = InitializeLocationParents(loc.Path);
+                if (!String.IsNullOrEmpty(loc.Path))  loc.TopTiers = InitializeLocationParents(loc.Path);
                 //loc.TopTiers = String.Join(",", parents);
             }
         }
