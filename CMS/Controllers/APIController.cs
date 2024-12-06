@@ -430,6 +430,8 @@ namespace CMS.Controllers
                             db.InventoryItems.Add(item);
                             item.ExpandLocation(db, true);
                             db.SaveChanges();
+                            item.Owner = db.Owners.Where(x => x.OwnerID == item.OwnerID).FirstOrDefault();
+                            item.ContainerUnit = db.ContainerUnits.Where(x => x.ContainerUnitID == item.ContainerUnitID).FirstOrDefault();
                             result.Set("UpdatedItem", item);
                             result.Succeed($"Inventory item #{item.InventoryID} ({item.Barcode}) successfully added.");
                             db.LogInfo(User.Identity.Name, "inventory update", result.Message);

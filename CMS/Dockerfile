@@ -5,8 +5,6 @@ FROM nexus.web.sandia.gov:8084/dotnet/aspnet:6.0 AS base
 WORKDIR /app
 # EXPOSE 80
 EXPOSE 443
-# EXPOSE 44389
-
 
 # This stage is used to build the service project
 FROM nexus.web.sandia.gov:8084/dotnet/sdk:6.0 AS build
@@ -16,7 +14,6 @@ ARG https_proxy $http_proxy
 ENV http_proxy=http://nouser:nopass@proxy.sandia.gov:80
 ENV https_proxy=$http_proxy
 ENV no_proxy=*.sandia.gov
-
 
 WORKDIR /src
 COPY ["CMS/Nuget.Config", "./"]
@@ -45,9 +42,5 @@ WORKDIR /app
 COPY --from=publish /app/publish .
 # Copy the SSL certificate from the build stage to the final stage
 #COPY ["certificates/aspnetapp.pfx", "/https/aspnetapp.pfx"]
-
-# Set environment variables for the certificate
-# ENV ASPNETCORE_Kestrel__Certificates__Default__Password=certificate_password
-# ENV ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
 
 ENTRYPOINT ["dotnet", "CAT.dll"]

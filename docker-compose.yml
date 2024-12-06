@@ -6,17 +6,18 @@ services:
     #   context: .
     #   dockerfile: mysql.Dockerfile
     image: cat-i-db
-    # environment:
-      # MYSQL_ROOT_PASSWORD: rootpassword
-      # MYSQL_DATABASE: cms
-      # MYSQL_USER: cms
-      # MYSQL_PASSWORD: cms
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: cms
+      MYSQL_USER: cms
+      MYSQL_PASSWORD: cms
     ports:
       - "3306:3306"
     networks:
       - mynetwork
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      # test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: mysqladmin ping -h 127.0.0.1 -u cms --password=cms
       interval: 10s
       timeout: 5s
       retries: 5
@@ -40,15 +41,16 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
-      - ConnectionStrings__DefaultConnection=Server=mysql;database=cmsusers;user=cms;password=cms;pooling=true;
-      - ConnectionStrings__CMSConnection=Server=mysql;database=cms;user=cms;password=cms;pooling=true;
-      - ASPNETCORE_Kestrel__Certificates__Default__Password=certificate_password  # Set your password here
+      - ConnectionStrings__DefaultConnection=Server=mysql;database=cmsusers;user=cms;password=cms;pooling=true; # Set your database password here
+      - ConnectionStrings__CMSConnection=Server=mysql;database=cms;user=cms;password=cms;pooling=true; # And here
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=certificate_password  # Set your certificate password here
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
     volumes:
         - ~/.aspnet/https:/https:ro
     depends_on:
         mysql:
             condition: service_healthy
+            restart: true
 networks:
   mynetwork:
     driver: bridge

@@ -792,6 +792,7 @@
                         new_item.SDS = dup.SDS;
                         new_item.State = dup.State;
                         new_item.Units = dup.Units;
+                        new_item.OwnerID = dup.OwnerID;
                     }
                     this.$refs['itemdialog'].open(config, function (updated_item) {
                         console.log("update callback", updated_item);
