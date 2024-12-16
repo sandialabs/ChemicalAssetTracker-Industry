@@ -516,7 +516,7 @@ CREATE TABLE `Refills` (
   PRIMARY KEY (`RefillID`),
   UNIQUE KEY `DeliveryID_UNIQUE` (`RefillID`),
   KEY `fk_Refills_InventoryItems1_idx` (`InventoryID`),
-  CONSTRAINT `fk_Refills_InventoryItems1` FOREIGN KEY (`InventoryID`) REFERENCES `InventoryItems` (`InventoryID`)
+  CONSTRAINT `fk_Refills_InventoryItems1` FOREIGN KEY (`InventoryID`) REFERENCES `InventoryItems` (`InventoryID`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

@@ -66,7 +66,7 @@
                                 </td>
                                 <td>
                                     <!--<v-select :items="units2" label="Units" v-model="itemdata.Units" v-bind:disabled="readonly"></v-select>-->
-                                    <v-select :items="units" item-text="Name" item-value="ContainerUnitID" label="Units" v-model="itemdata.ContainerUnitID" v-bind:disabled="readonly" @change="on_modified"></v-select>
+                                    <v-select background-color="#8F8" :items="units" item-text="Name" item-value="ContainerUnitID" label="Units" v-model="itemdata.ContainerUnitID" v-bind:disabled="readonly" @change="on_modified"></v-select>
                                 </td>
                                 <td>
                                     <v-switch v-model="itemdata.Refillable" label="Refillable" v-bind:readonly="readonly" @input="on_modified" color="blue" @change="changeRefillable($event)"></v-switch>
@@ -217,7 +217,7 @@ function ItemFlag(label, flagname, readonly) {
     this.FlagName = flagname;
     this.Value = false;
     this.IsReadonly = readonly == true;
-    this.Debug = false;
+    this.Debug = true;
 }
 
 ItemFlag.prototype.setValue = function(flags) {
@@ -266,7 +266,7 @@ const mymodule = {
         units: [],
         debug: {
             type: Boolean,
-            default: false,
+            default: true,
         },
         width: {
             type: Number,
@@ -537,6 +537,7 @@ const mymodule = {
             if (is_empty(itemdata.Barcode)) missing.push("Item ID");
             if (is_empty(itemdata.ChemicalName)) missing.push("ChemicalName");
             if (is_empty(itemdata.CASNumber)) missing.push("CAS #");
+            if (is_empty(itemdata.ContainerUnitID)) missing.push("Units");
             if (!itemdata.LocationID) missing.push("Location");
             if (itemdata.LocationID == 1) {
                 let toploc = this.$refs.locationpicker.find_location(1);
@@ -638,9 +639,10 @@ const mymodule = {
             this.on_modified();
             //if (this.debug) console.log("on_cas_input: " + casnumber);
             //if (item.InventoryID == 0) {
+
+            this.reset_hazard_flags(item._flagobjects);
             if (casNumberList.length == 0) {
                     // CAS # has become empty, uncheck all the flags
-                    this.reset_hazard_flags(item._flagobjects);
                     return;
                 }
                 let self = this;
@@ -650,14 +652,16 @@ const mymodule = {
                     let casnumber = value;
 
                     if (casnumber.length > 0 && utils.is_cas_number(casnumber)) {
+                        console.log('Looking up "' + casnumber + '"');
                         if (this.debug) console.log('Looking up "' + casnumber + '"');
                         get_hazard_information_for_casnumber(casnumber, function (result) {
+                            console.log("itemdialog.vue - have hazard results for " + casnumber, result);
                             if (self.debug) {
                                 if (result) console.log("itemdialog.vue - have hazard results for " + casnumber, result);
                                 else console.log("No hazard date found for " + casnumber);
                             }
                             if (result) {
-                                self.reset_hazard_flags(item._flagobjects);
+                                //self.reset_hazard_flags(item._flagobjects);
                                 let flags = self.flatten_flags(item._flagobjects);
                                 Object.keys(flags).forEach((key) => {
                                     let hazard = key;
@@ -670,7 +674,7 @@ const mymodule = {
                                     }
                                     let newvalue = result[hazard];
                                     if (newvalue && self.debug) console.log("    setting " + flag.FlagName + " to " + newvalue);
-                                    flag.Value = newvalue;
+                                    if (newvalue) { flag.Value = newvalue; }
                                 });
                                 self.checkmark_message = "GHS pictograms as indicated in the Annex VI of the CLP Regulation (EU REGULATION (EC) No 1272/2008)";
                             }
