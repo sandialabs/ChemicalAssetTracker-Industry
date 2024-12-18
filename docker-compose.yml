@@ -2,9 +2,9 @@ services:
   mysql:
     container_name: mysql-container
     # Remove the build stage if you want to pull the existing container.
-    # build:
-    #   context: .
-    #   dockerfile: mysql.Dockerfile
+    build:
+      context: .
+      dockerfile: mysql.Dockerfile
     image: cat-i-db
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
